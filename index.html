@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#101a17">
+  <title>FUTEBOL-DETRAN</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root{--bg:#0d1512;--panel:#15221d;--panel2:#1b2c24;--line:#2b4035;--text:#f2f7f3;--muted:#a8b9ae;--green:#35c878;--green2:#1d9b59;--red:#ff6868;--yellow:#f2c45e;--blue:#65b8f2;--shadow:0 14px 35px #0005}
+    *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#1a3025 0,#0d1512 55%);color:var(--text);font:15px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    button,input{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;font-weight:700;background:var(--green);color:#062013}button:hover{filter:brightness(1.08)}button:disabled{opacity:.45;cursor:not-allowed}
+    .secondary{background:#263a30;color:var(--text);border:1px solid var(--line)}.danger{background:#542b2b;color:#ffdede}.warning{background:#57451e;color:#fff0bd}.small{padding:6px 9px;font-size:12px}
+    .admin-header-actions{gap:7px}
+    #gameSettingsBtn{font-size:17px;width:36px;height:34px;display:grid;place-items:center;padding:0}
+    .settings-card{width:min(560px,100%);max-height:90vh;overflow-y:auto}
+    .settings-card>p{font-size:12px;line-height:1.5;margin:4px 0 16px}
+    .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+    .settings-grid input{width:100%;background:#0d1712;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:9px}
+    .friendly-setting{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px;padding:13px;border:1px solid #315b40;border-radius:12px;background:linear-gradient(120deg,#173322,#102018)}
+    .friendly-setting strong{font-size:13px}
+    .friendly-setting p{font-size:11px;line-height:1.4;margin:4px 0 0}
+    .friendly-toggle{white-space:nowrap;font-size:10px;padding:9px 11px;background:#263a30;color:#c4d2c9;border:1px solid #52665a}
+    .friendly-toggle.is-enabled{background:#1b5835;color:#c9ffda;border-color:#49a86a;box-shadow:inset 0 0 0 1px #49a86a}
+    .settings-footer{margin-top:17px}
+    .settings-footer small{max-width:55%;font-size:10px;line-height:1.4}
+    /* Configurações: painel visual com hierarquia, agrupamento e controles consistentes. */
+    .settings-card{width:min(620px,100%);max-height:92vh;padding:0;overflow:hidden;display:flex;flex-direction:column;background:#0d1712;border:1px solid #355344;border-radius:22px}
+    .settings-hero{position:relative;display:flex;align-items:center;gap:14px;padding:22px 24px;background:radial-gradient(ellipse at 85% 0%,#2b6545 0%,transparent 58%),linear-gradient(125deg,#1c3c2a,#122219 78%);border-bottom:1px solid #31513d}
+    .settings-hero-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:15px;background:#ffffff12;border:1px solid #ffffff20;font-size:24px;flex:0 0 48px}
+    .settings-hero-copy{min-width:0}
+    .settings-eyebrow{font-size:9px;letter-spacing:1.6px;font-weight:900;color:#9de3b2}
+    .settings-hero h2{font-size:22px;line-height:1.15;margin:4px 0;color:#f2fff6}
+    .settings-hero p{font-size:11px;color:#b1cbbb;margin:0}
+    .settings-close{margin-left:auto;align-self:flex-start;width:32px;height:32px;min-height:32px;padding:0;border-radius:10px;background:#ffffff12;color:#e8f5ec;border:1px solid #ffffff20}
+    .settings-content{padding:8px 22px 14px;overflow-y:auto;overscroll-behavior:contain}
+    .settings-section{padding:15px 0 16px;border-bottom:1px solid #26392f}
+    .settings-section:last-child{border-bottom:0}
+    .settings-section-heading{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+    .settings-section-icon{width:34px;height:34px;display:grid;place-items:center;border-radius:11px;background:#1c3426;border:1px solid #345640;font-size:16px}
+    .settings-section-heading h3{font-size:13px;color:#e4f2e8;margin:0 0 3px}
+    .settings-section-heading p{font-size:10px;color:#8fa697;margin:0}
+    .settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .settings-field{padding:11px 12px;border-radius:12px;background:#14221a;border:1px solid #2b4033;gap:8px}
+    .settings-field label{font-size:10px;color:#a9bdb0;font-weight:700}
+    .settings-input-wrap{display:flex;align-items:center;gap:7px}
+    .settings-input-wrap input{width:70px;min-width:0;background:#0a140e;border:1px solid #3b5947;color:#f2fff6;padding:8px 9px;border-radius:8px;font-size:17px;font-weight:850;font-variant-numeric:tabular-nums}
+    .settings-input-wrap span{font-size:9px;color:#789080}
+    .settings-option{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 13px;background:#14221a;border:1px solid #2b4033;border-radius:12px;margin-top:8px}
+    .settings-option-copy{min-width:0}
+    .settings-option-copy strong{font-size:11px;color:#e5f3e9}
+    .settings-option-copy p{font-size:10px;line-height:1.45;color:#91a99a;margin:4px 0 0}
+    .friendly-toggle{min-width:104px;white-space:nowrap;font-size:9px;letter-spacing:.4px;font-weight:900;padding:9px 10px;border-radius:9px;background:#25352c;color:#aebeb4;border:1px solid #506255}
+    .friendly-toggle.is-enabled{background:linear-gradient(135deg,#1d7040,#174a30);color:#d4ffe1;border-color:#52b979;box-shadow:0 0 0 2px #2b92503b}
+    .settings-bottom{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 22px;background:#101d15;border-top:1px solid #2a4032}
+    .settings-bottom>span{font-size:9px;line-height:1.4;color:#849b8c;max-width:48%}
+    .settings-bottom button{display:flex;align-items:center;gap:12px;padding:11px 15px;border-radius:10px}
+    #settingsMessage{margin:0 18px 15px}
+    .first-penalty-card{width:min(520px,100%);padding:22px;background:linear-gradient(160deg,#17271e,#0d1712);border-color:#45634e}
+    .penalty-modal-heading{text-align:center}
+    .penalty-kicker{font-size:9px;letter-spacing:1.5px;font-weight:900;color:#9bd7ad}
+    .penalty-modal-heading h2{font-size:21px;margin:7px 0}
+    .penalty-modal-heading p{font-size:11px;margin:0 0 18px;color:#a3b8aa}
+    .first-penalty-scoreboard{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px}
+    .first-penalty-team{display:flex;flex-direction:column;align-items:center;padding:16px 8px;border:1px solid #385342;border-radius:14px;background:#0d1b13}
+    .first-penalty-team span{font-size:10px;letter-spacing:1px;font-weight:900;color:#a5b9aa}
+    .first-penalty-team strong{font-size:48px;line-height:1.15;font-weight:900;font-variant-numeric:tabular-nums}
+    .first-penalty-team small{font-size:9px;color:#81998a;margin-top:4px}
+    .first-penalty-team-a strong{color:#a8edbb}.first-penalty-team-b strong{color:#b8d8ff}
+    .first-penalty-vs{font-weight:900;color:#789080}
+    .penalty-turn-card{display:flex;flex-direction:column;align-items:center;margin:14px 0;padding:11px;border-radius:12px;background:#1b3022;border:1px solid #365a42}
+    .penalty-turn-label{font-size:8px;letter-spacing:1.4px;font-weight:900;color:#93b49e}
+    .penalty-turn-card strong{font-size:17px;color:#e5ffeb;margin:3px 0}
+    .penalty-turn-card small{font-size:9px;color:#9cb5a4}
+    .first-penalty-controls{padding:13px;border:1px solid #304a39;border-radius:13px;background:#101e16}
+    .first-penalty-controls label{display:block;font-size:10px;color:#a9c0b0;font-weight:800;margin-bottom:7px}
+    .first-penalty-controls select{width:100%;padding:11px;border-radius:9px;background:#09130d;color:#edf8f0;border:1px solid #3c5946}
+    .first-penalty-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .first-penalty-actions button{font-size:11px;padding:11px 8px}
+    #firstPenaltyMiss{background:#29372f}
+    .penalty-modal-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px}
+    .penalty-modal-footer span{font-size:9px;line-height:1.4;color:#80988a;max-width:75%}
+    .penalty-modal-footer button{flex:0 0 auto}
+    @media(max-width:520px){
+      .settings-card{max-height:94vh;border-radius:17px}
+      .settings-hero{padding:17px 16px;gap:10px}
+      .settings-hero-icon{width:40px;height:40px;flex-basis:40px;font-size:20px}
+      .settings-hero h2{font-size:19px}
+      .settings-content{padding:5px 15px 10px}
+      .settings-option{align-items:flex-start;padding:10px}
+      .settings-option-copy p{max-width:240px}
+      .friendly-toggle{min-width:92px;padding:8px 7px;font-size:8px}
+      .settings-bottom{padding:12px 15px}
+      .settings-bottom button{font-size:10px;padding:10px}
+      .first-penalty-card{padding:17px}
+    }
+    header{position:sticky;top:0;z-index:5;background:#0d1512eF;border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+    .top{max-width:1250px;margin:auto;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px}.brand{display:flex;align-items:center;gap:12px}.ball{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,var(--green),#157c48);display:grid;place-items:center;font-size:23px}.brand h1{font-size:19px;letter-spacing:1.4px;margin:0}.brand small{color:var(--muted)}
+    main{max-width:1250px;margin:24px auto;padding:0 20px 50px}.grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}.panel{background:linear-gradient(160deg,#192820,#132019);border:1px solid var(--line);border-radius:17px;padding:18px;box-shadow:var(--shadow);min-width:0}.panel h2{margin:0 0 14px;font-size:16px}.muted{color:var(--muted)}.row{display:flex;align-items:center;gap:9px;flex-wrap:wrap}.between{justify-content:space-between}.field{display:flex;flex-direction:column;gap:5px;flex:1;min-width:150px}.field label{font-size:12px;color:var(--muted)}input[type=text],input[type=email],input[type=password]{width:100%;background:#0d1712;border:1px solid var(--line);color:var(--text);padding:11px;border-radius:9px;outline:none}input:focus{border-color:var(--green)}
+    .team-player{display:flex;align-items:center;justify-content:space-between;gap:7px;margin:7px 0;min-height:34px;text-align:left}
+    .team-player-info{display:flex;flex-direction:column;align-items:flex-start;min-width:0;flex:1}
+    .team-player-name{font-size:12px;font-weight:700;overflow-wrap:anywhere}
+    .team-player-meta{font-size:9px;color:#8fa397;letter-spacing:.1px;margin-top:2px;white-space:nowrap}
+    .team-player-meta span{color:#52685a;padding:0 2px}
+    .team-player-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto}
+    .score-player{width:36px;height:36px;min-height:36px;padding:0;border-radius:50%;font-size:19px;display:inline-grid;place-items:center;background:#245b3b;color:#fff;border:1px solid #3a9d62;flex:0 0 36px}
+    .score-player:active{transform:scale(.94)}
+    .scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}.team{background:#0e1913;border:1px solid var(--line);border-radius:14px;padding:15px;text-align:center}.team h3{margin:0 0 5px;font-size:14px;color:var(--muted)}.score{font-size:48px;font-weight:850;line-height:1.1}.vs{font-weight:900;color:var(--muted)}.teamlist{font-size:12px;color:var(--muted);margin-top:9px;min-height:35px}.timer{font-size:38px;font-weight:850;letter-spacing:2px;text-align:center;margin:14px 0 2px}.status{text-align:center;color:var(--muted);font-size:12px}
+    .statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.stat{background:#0d1912;border:1px solid var(--line);border-radius:11px;padding:11px}.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted)}
+    .player-list{display:flex;flex-direction:column;gap:7px}.player{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;background:#0e1913;border:1px solid #26392f;border-radius:10px}.player .name{font-weight:650}.tag{display:inline-block;font-size:10px;padding:3px 7px;border-radius:20px;background:#254632;color:#a9f0c4;margin-left:5px}.tag.gold{background:#4b3c1c;color:#ffdf8a}.tag.gray{background:#28342d;color:#c3d0c8}.queue-num{font-size:12px;color:var(--muted);min-width:22px}
+    .tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:15px}.tab{background:#1b2c24;color:var(--muted);border:1px solid var(--line)}.tab.active{background:var(--green);color:#062013}
+    .notice{padding:10px 12px;border-radius:10px;background:#243c2e;border:1px solid #355b43;color:#c8f4d7;font-size:13px;margin:12px 0}.notice.warn{background:#43371d;border-color:#695528;color:#ffe9ad}.hidden{display:none!important}.section{margin-top:18px}.empty{padding:20px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}.auth{max-width:430px;margin:9vh auto}.auth .panel{padding:25px}.auth h1{margin:0 0 5px}.auth p{color:var(--muted);margin-top:0}.auth .field{margin:12px 0}
+    .modal-overlay{position:fixed;inset:0;z-index:20;background:#000b;display:flex;align-items:center;justify-content:center;padding:18px;backdrop-filter:blur(5px)}
+    .modal-card{width:min(100%,420px);background:linear-gradient(160deg,#192820,#101a14);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:0 24px 70px #000b}
+    .modal-card p{color:var(--muted);font-size:13px;margin:14px 0}
+    .admin-only.hidden{display:none!important}
+    .penalty{display:grid;grid-template-columns:1fr 1fr;gap:12px}.penaltybox{padding:13px;background:#0e1913;border:1px solid var(--line);border-radius:12px}.penaltybox h3{font-size:13px;margin:0 0 8px}.history-item{padding:9px 0;border-bottom:1px solid var(--line);font-size:13px}.footer{text-align:center;color:#71877a;font-size:11px;margin:25px 0}
+
+    .teamlist{display:flex;flex-direction:column;gap:0;text-align:left;margin-top:10px;min-height:0}
+    .team-player{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:6px 5px;margin:0;min-height:42px;border-bottom:1px solid #2b4035;text-align:left}
+    .team-player:last-child{border-bottom:0}
+    .team-player-name{min-width:0;text-align:left;overflow-wrap:anywhere;font-size:12px;color:var(--text)}
+    .team-player-actions{display:flex;align-items:center;justify-content:flex-end;gap:6px;min-width:82px}
+    .score-player,.sub-player{width:36px;height:36px;min-height:36px;padding:0;border-radius:9px;font-size:19px;display:inline-grid;place-items:center;flex:0 0 36px}
+    .score-player{background:#245b3b;color:#fff;border:1px solid #3a9d62}
+    .sub-player{background:#263a55;color:#d8eaff;border:1px solid #42658d}
+    .team-empty{padding:10px 3px;text-align:center;color:var(--muted)}
+    .roster-row{flex-direction:row!important;align-items:center!important;min-height:56px}
+    .roster-row>div:last-child{width:auto!important;display:flex;flex-wrap:nowrap!important}
+    .attendance-legend{font-size:11px;margin:0 0 10px;line-height:1.5}
+    .roster-status{display:flex;align-items:center;flex:0 0 36px}
+    .roster-name{display:flex;align-items:center;gap:6px;min-width:0;flex:1;flex-wrap:wrap}
+    .roster-row>.delete-player{flex:0 0 36px}
+    .status-btn{width:36px;height:36px;min-height:36px;padding:0;border-radius:10px;color:#fff;font-weight:900;font-size:15px}
+    .status-confirmado{background:linear-gradient(135deg,#22c55e,#15803d);color:#fff}
+    .status-ausente{background:linear-gradient(135deg,#ef4444,#b91c1c);color:#fff}
+    .status-pendente{background:linear-gradient(135deg,#f59e0b,#b45309);color:#fff}
+    .status-view{display:grid;place-items:center;width:30px;height:30px;border-radius:9px;font-weight:900}
+    .delete-player{width:36px;height:36px;min-height:36px;padding:0;border-radius:10px;background:#542b2b;color:#ffdede;border:1px solid #804343}
+    .name-absent{color:#ff9292;text-decoration:line-through;text-decoration-color:#ff6868}
+    .ranking-table{width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+    .ranking-head,.ranking-row{display:grid;grid-template-columns:34px minmax(100px,1fr) 58px 62px 72px;gap:6px;align-items:center;padding:10px 8px;font-size:12px;min-width:340px}
+    .ranking-head{background:#0d1912;color:var(--muted);font-size:10px;font-weight:800;text-transform:uppercase}
+    .ranking-row{border-top:1px solid var(--line)}
+    .ranking-row:nth-child(even){background:#ffffff05}
+    .ranking-row>span:nth-child(n+3),.ranking-row>b:nth-child(n+3){text-align:center;font-variant-numeric:tabular-nums}
+    .ranking-player{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .substitution-option{min-height:48px}
+    .queue-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px 10px;background:#0e1913;border:1px solid #26392f;border-radius:10px}
+    .queue-position{font-size:13px;font-weight:800;color:var(--muted);text-align:center}
+    .queue-player-main{min-width:0}
+    .queue-player-name{font-weight:700;overflow-wrap:anywhere}
+    .queue-player-games{font-size:11px;color:var(--muted);margin-top:2px}
+    .queue-actions{display:flex;gap:5px}
+    .queue-move{width:36px;height:36px;min-height:36px;padding:0;border-radius:9px;background:#263a30;color:#f2f7f3;border:1px solid var(--line)}
+    .queue-move:disabled{opacity:.25}
+
+    .roster-actions{display:flex;align-items:center;gap:6px;flex:0 0 auto}
+    .keeper-toggle{width:36px;height:36px;min-height:36px;padding:0;border-radius:10px;background:#263a30;color:#d9e9df;border:1px solid var(--line);font-size:18px}
+    .keeper-toggle.keeper-active{background:#59471d;color:#ffe39a;border-color:#987a35;box-shadow:inset 0 0 0 1px #d6ad4c}
+    .ranking-live{font-size:9px;letter-spacing:1px;font-weight:900;color:#9de8b8;border:1px solid #315b40;background:#173322;padding:5px 8px;border-radius:20px}
+    .history-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+    .history-heading h2{margin:0 0 3px}
+    .history-heading p{margin:0;font-size:11px}
+    .ranking-podium{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0 14px}
+    .podium-card{min-width:0;text-align:center;padding:12px 7px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(160deg,#20382a,#122018)}
+    .podium-1{border-color:#a58a43;background:linear-gradient(160deg,#4a3c1d,#1b261b)}
+    .podium-2{background:linear-gradient(160deg,#34413b,#17231d)}
+    .podium-3{background:linear-gradient(160deg,#473326,#1c241d)}
+    .podium-medal{font-size:23px;line-height:1.2}
+    .podium-rank{font-size:9px;font-weight:900;letter-spacing:.8px;color:var(--muted);margin:5px 0}
+    .podium-name{font-size:12px;font-weight:800;overflow-wrap:anywhere;min-height:34px;display:grid;place-items:center}
+    .podium-goals{display:flex;justify-content:center;align-items:baseline;gap:4px;margin:4px 0}
+    .podium-goals strong{font-size:23px;color:#a8efbd}
+    .podium-goals span,.podium-mini-stats{font-size:10px;color:var(--muted)}
+    .podium-mini-stats{display:flex;justify-content:center;gap:9px}
+    .podium-card{position:relative;overflow:hidden;box-shadow:0 8px 22px #0003}
+    .podium-1{grid-column:2;grid-row:1;transform:translateY(-4px);box-shadow:0 10px 26px #b08d3425}
+    .podium-2{grid-column:1;grid-row:1;transform:translateY(10px)}
+    .podium-3{grid-column:3;grid-row:1;transform:translateY(10px)}
+    .podium-1 .podium-name{font-size:16px;min-height:42px}
+    .podium-2 .podium-name,.podium-3 .podium-name{font-size:11px}
+    .podium-1 .podium-medal{font-size:30px}
+    .podium-1 .podium-rank{color:#f0d88e}
+    .podium-wins{display:flex;align-items:baseline;justify-content:center;gap:6px;margin:7px 0 10px;padding:7px 5px;border-radius:9px;background:#0b1710a8}
+    .podium-wins strong{font-size:27px;line-height:1;color:#b8f2c9;font-variant-numeric:tabular-nums}
+    .podium-wins span{font-size:9px;font-weight:900;letter-spacing:.8px;color:#a9c6b3}
+    .podium-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px}
+    .podium-metric{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 2px;border:1px solid #ffffff12;border-radius:8px;background:#08130e55;min-width:0}
+    .podium-metric-icon{font-size:11px;line-height:1.2}
+    .podium-metric strong{font-size:16px;line-height:1.1;font-variant-numeric:tabular-nums}
+    .podium-metric small{font-size:7px;font-weight:850;letter-spacing:.35px;color:var(--muted)}
+    .ranking-scroll{max-height:340px;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:12px;background:#0e1913;scrollbar-width:thin;scrollbar-color:#42634f #142019}
+    .ranking-list{display:flex;flex-direction:column}
+    .rank-row{display:grid;grid-template-columns:27px minmax(0,1fr) 43px 43px 43px;gap:7px;align-items:center;padding:10px 9px;border-bottom:1px solid #26392f}
+    .rank-row:last-child{border-bottom:0}
+    .rank-number{font-size:12px;font-weight:900;color:var(--muted);text-align:center}
+    .rank-main{min-width:0}
+    .rank-name{font-size:12px;font-weight:750;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-bottom:5px}
+    .rank-goal-track{height:4px;border-radius:10px;background:#25372c;overflow:hidden}
+    .rank-goal-track span{display:block;height:100%;border-radius:10px;background:linear-gradient(90deg,#239b5a,#65d991)}
+    .rank-stat{text-align:center;display:flex;flex-direction:column;line-height:1.1}
+    .rank-stat strong{font-size:14px;font-variant-numeric:tabular-nums}
+    .rank-stat small{font-size:8px;color:var(--muted);font-weight:800;margin-top:3px}
+    .rank-goals strong{color:#9ce8b5}
+    .match-history-section{border-top:1px solid var(--line);padding-top:16px}
+    .match-history-scroll{max-height:440px;overflow-y:auto;overscroll-behavior:contain;padding-right:3px;scrollbar-width:thin;scrollbar-color:#42634f #142019}
+    .history-match-penalties{font-size:10px;color:#e5d18e;margin-top:6px;padding-top:6px;border-top:1px solid #344334}
+    .history-match-card{padding:12px;margin-bottom:9px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(150deg,#192920,#101a14)}
+    .history-match-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .history-match-number{font-size:10px;letter-spacing:.7px;font-weight:900;color:#9de8b8}
+    .history-match-date{font-size:10px;color:var(--muted);text-align:right}
+    .history-match-score{display:flex;align-items:center;justify-content:center;gap:18px;margin:5px 0 0}
+    .history-match-score strong{font-size:27px;line-height:1.1}
+    .history-match-score span{color:var(--muted);font-weight:800}
+    .history-match-result{text-align:center;font-size:10px;font-weight:900;letter-spacing:.5px;margin:2px 0 9px;color:#c9d8ce}
+    .result-a{color:#8de5ad}.result-b{color:#8fcaff}.result-draw{color:#f4d17a}
+    .history-match-teams{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .history-match-teams>div{min-width:0;padding:8px;background:#0c1711;border-radius:8px}
+    .history-match-teams b{display:block;font-size:9px;color:var(--muted);margin-bottom:4px}
+    .history-match-teams span{display:block;font-size:10px;line-height:1.4;overflow-wrap:anywhere}
+    .history-match-scorers{font-size:10px;color:#b9e9c8;margin-top:8px;padding-top:7px;border-top:1px solid #293d31;overflow-wrap:anywhere}
+
+    /* Mobile-first: a operação principal acontece no celular. */
+    html{ -webkit-text-size-adjust:100%; }
+    body{font-size:15px;padding-bottom:env(safe-area-inset-bottom)}
+    button{min-height:44px;touch-action:manipulation}
+    input[type=text],input[type=email],input[type=password],select{min-height:46px;font-size:16px}
+    .top{max-width:760px;padding:10px 12px;align-items:center}
+    .brand{gap:8px}.ball{width:38px;height:38px;flex:0 0 38px}.brand h1{font-size:15px;letter-spacing:.8px}.brand small{font-size:10px}
+    .top>.row{gap:5px;justify-content:flex-end}.top .muted{font-size:10px;max-width:72px;text-align:right}
+    main{max-width:760px;margin:12px auto;padding:0 10px 32px}
+    .grid{grid-template-columns:1fr;gap:12px}.panel{padding:13px;border-radius:14px}
+    .tabs{position:sticky;top:58px;z-index:4;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px 0;background:#0d1512f2;backdrop-filter:blur(10px)}
+    .tab{padding:10px 5px;min-height:42px;font-size:12px}
+    .scoreboard{grid-template-columns:minmax(0,1fr) 18px minmax(0,1fr);gap:5px}.team{padding:12px 5px}.team h3{font-size:12px}.score{font-size:clamp(36px,12vw,54px)}.teamlist{font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+    .podium-metric{padding:5px 1px}.podium-metric small{font-size:6px}.podium-wins strong{font-size:24px}.podium-name{font-size:11px}
+    .settings-grid{grid-template-columns:1fr}.friendly-setting{align-items:flex-start}.settings-footer{align-items:flex-end}
+    .podium-1{transform:translateY(-2px)}.podium-2,.podium-3{transform:translateY(7px)}
+    .timer{font-size:clamp(38px,11vw,50px);margin:12px 0 0}.statrow{gap:6px;margin-top:12px}.stat{padding:8px 5px;text-align:center}.stat b{font-size:19px}.stat span{font-size:10px}
+    .row.section{gap:7px}.row.section>button{flex:1 1 calc(50% - 7px)}
+    .field{min-width:100%}.player{align-items:flex-start;flex-direction:column;padding:11px;gap:8px}.player>div:last-child{width:100%;display:flex;flex-wrap:wrap;gap:6px}.player button{flex:1 1 auto;min-height:40px}
+    .player .player-stats{font-size:11px;color:var(--muted);display:block;margin-top:4px}
+    .penalty{grid-template-columns:1fr 1fr;gap:7px}.penaltybox{padding:9px}.penaltybox button{width:100%;margin:3px 0}
+    .history-item{padding:12px 2px;line-height:1.5}.modal-overlay{align-items:flex-end;padding:0}.modal-card{width:100%;max-width:none;border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:88dvh;overflow:auto}
+    @media(min-width:700px){.top{padding:13px 18px}.grid{grid-template-columns:1fr 1fr}.player{flex-direction:row;align-items:center}.player>div:last-child{width:auto}.tabs{top:64px}.panel{padding:17px}}
+  </style>
+</head>
+<body>
+  <div id="adminLoginModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="adminLoginTitle">
+    <div class="modal-card">
+      <div class="brand"><div class="ball">⚽</div><div><h1 id="adminLoginTitle">Acesso ADM</h1><small>Área administrativa</small></div></div>
+      <p>O FUTEBOL-DETRAN é público para consulta. Entre com seu e-mail e senha cadastrados no Supabase Auth.</p>
+      <div class="field"><label>E-mail do administrador</label><input id="email" type="email" autocomplete="username" placeholder="admin@exemplo.com"></div>
+      <div class="field"><label>Senha</label><input id="password" type="password" autocomplete="current-password" placeholder="Senha do administrador"></div>
+      <div id="authMessage" class="notice warn hidden"></div>
+      <div class="row section"><button id="loginBtn">Entrar</button><button id="cancelAdminLogin" class="secondary">Cancelar</button></div>
+    </div>
+  </div>
+
+  <div id="gameSettingsModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="gameSettingsTitle">
+    <div class="modal-card settings-card">
+      <div class="settings-hero">
+        <div class="settings-hero-icon">⚙️</div>
+        <div class="settings-hero-copy">
+          <span class="settings-eyebrow">PAINEL DO ADMINISTRADOR</span>
+          <h2 id="gameSettingsTitle">Regras da pelada</h2>
+          <p>Personalize o ritmo, a formação e a dinâmica das partidas.</p>
+        </div>
+        <button id="closeGameSettings" class="settings-close" type="button" aria-label="Fechar configurações">✕</button>
+      </div>
+
+      <div class="settings-content">
+        <section class="settings-section">
+          <div class="settings-section-heading"><span class="settings-section-icon">⏱️</span><div><h3>Formato da partida</h3><p>Defina o tempo e as condições de vitória.</p></div></div>
+          <div class="settings-grid">
+            <div class="field settings-field"><label for="settingMatchMinutes">Tempo por partida</label><div class="settings-input-wrap"><input id="settingMatchMinutes" type="number" min="1" max="60" step="1"><span>min</span></div></div>
+            <div class="field settings-field"><label for="settingGoalsToWin">Gols para vencer</label><div class="settings-input-wrap"><input id="settingGoalsToWin" type="number" min="1" max="20" step="1"><span>gols</span></div></div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <div class="settings-section-heading"><span class="settings-section-icon">👥</span><div><h3>Formação e rotatividade</h3><p>Controle o tamanho dos times e a permanência em quadra.</p></div></div>
+          <div class="settings-grid">
+            <div class="field settings-field"><label for="settingPlayersPerTeam">Jogadores por time</label><div class="settings-input-wrap"><input id="settingPlayersPerTeam" type="number" min="2" max="15" step="1"><span>inclui goleiro</span></div></div>
+            <div class="field settings-field"><label for="settingConsecutiveWins">Vitórias consecutivas</label><div class="settings-input-wrap"><input id="settingConsecutiveWins" type="number" min="1" max="20" step="1"><span>para sair</span></div></div>
+          </div>
+        </section>
+
+        <section class="settings-section settings-options-section">
+          <div class="settings-section-heading"><span class="settings-section-icon">✨</span><div><h3>Regras especiais</h3><p>Ative recursos para deixar os confrontos mais equilibrados.</p></div></div>
+          <div class="settings-option">
+            <div class="settings-option-copy"><strong>⚖️ FriendlyFut</strong><p>Distribui os principais artilheiros entre os times para evitar concentrações de gols em um único lado.</p></div>
+            <button id="settingFriendlyFut" class="friendly-toggle" type="button" aria-pressed="false">DESATIVADO</button>
+          </div>
+          <div class="settings-option">
+            <div class="settings-option-copy"><strong>🥅 Pênaltis no primeiro jogo</strong><p>Se a primeira partida terminar empatada no tempo, abre uma disputa de pênaltis para decidir quem vence.</p></div>
+            <button id="settingPenaltiesFirstMatch" class="friendly-toggle" type="button" aria-pressed="false">DESATIVADO</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="settings-bottom">
+        <span>As alterações são salvas e sincronizadas com todos.</span>
+        <button id="saveGameSettings" type="button"><span>Salvar configurações</span><span>✓</span></button>
+      </div>
+      <div id="settingsMessage" class="notice hidden"></div>
+    </div>
+  </div>
+
+  <div id="firstMatchPenaltyModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="firstMatchPenaltyTitle">
+    <div class="modal-card first-penalty-card">
+      <div class="penalty-modal-heading"><span class="penalty-kicker">DECISÃO DA PRIMEIRA PARTIDA</span><h2 id="firstMatchPenaltyTitle">🥅 Disputa de pênaltis</h2><p>Empate no tempo regulamentar. A cobrança é alternada entre os times.</p></div>
+      <div class="first-penalty-scoreboard">
+        <div class="first-penalty-team first-penalty-team-a"><span>TIME A</span><strong id="firstPenaltyScoreA">0</strong><small id="firstPenaltyKicksA">0 cobranças</small></div>
+        <div class="first-penalty-vs">×</div>
+        <div class="first-penalty-team first-penalty-team-b"><span>TIME B</span><strong id="firstPenaltyScoreB">0</strong><small id="firstPenaltyKicksB">0 cobranças</small></div>
+      </div>
+      <div class="penalty-turn-card">
+        <span class="penalty-turn-label">VEZ DE COBRAR</span>
+        <strong id="firstPenaltyTurn">TIME A</strong>
+        <small id="firstPenaltyRound">Série inicial · 1ª cobrança de cada time</small>
+      </div>
+      <div id="firstPenaltyAdminControls" class="first-penalty-controls admin-only">
+        <label for="firstPenaltyScorer">Jogador que converteu a cobrança</label>
+        <select id="firstPenaltyScorer"></select>
+        <div class="first-penalty-actions"><button id="firstPenaltyGoal" type="button">⚽ Registrar gol</button><button id="firstPenaltyMiss" class="secondary" type="button">Cobrança sem gol</button></div>
+      </div>
+      <div id="firstPenaltyWaiting" class="notice">Aguardando o administrador registrar a cobrança.</div>
+      <div class="penalty-modal-footer"><span>Após três cobranças por time, segue em morte súbita se continuar empatado.</span><button id="closeFirstPenalty" class="secondary small admin-only" type="button">Fechar</button></div>
+    </div>
+  </div>
+  <div id="substitutionModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="substitutionTitle">
+    <div class="modal-card">
+      <div class="row between"><h2 id="substitutionTitle">Substituir jogador</h2><button id="cancelSubstitution" class="secondary small" type="button">Fechar</button></div>
+      <p id="substitutionDescription" class="muted">Selecione alguém da fila de espera.</p>
+      <div id="substitutionQueue" class="player-list"></div>
+    </div>
+  </div>
+
+  <div id="appView">
+    <header><div class="top">
+      <div class="brand"><div class="ball">⚽</div><div><h1>FUTEBOL-DETRAN</h1><small>Sistema para gerenciar peladas</small></div></div>
+      <div class="row admin-header-actions"><button id="gameSettingsBtn" class="secondary small admin-only" type="button" title="Configurações das regras do jogo" aria-label="Configurações das regras do jogo">⚙️</button><button id="adminLoginBtn" class="secondary small" type="button">🔑 Entrar</button></div>
+    </div></header>
+    <main>
+      <div class="tabs">
+        <button class="tab active" data-tab="partida">Partida</button>
+        <button class="tab" data-tab="jogadores">Jogadores e fila</button>
+        <button class="tab" data-tab="historico">Histórico</button>
+      </div>
+
+      <section id="tab-partida">
+        <div class="panel">
+          <div class="row between"><h2>Placar da partida</h2><span id="matchNumber" class="tag gray">Partida não iniciada</span></div>
+          <div class="scoreboard">
+            <div class="team"><h3>TIME A</h3><div id="scoreA" class="score">0</div><div id="teamAList" class="teamlist">Aguardando formação</div></div>
+            <div class="vs">×</div>
+            <div class="team"><h3>TIME B</h3><div id="scoreB" class="score">0</div><div id="teamBList" class="teamlist">Aguardando formação</div></div>
+          </div>
+          <div id="timer" class="timer">10:00</div><div id="timerStatus" class="status">A primeira partida terá 10 minutos obrigatórios.</div>
+          <div class="statrow">
+            <div class="stat"><b id="winsA">0</b><span>Vitórias seguidas · A</span></div>
+            <div class="stat"><b id="queueCount">0</b><span>Na fila</span></div>
+            <div class="stat"><b id="winsB">0</b><span>Vitórias seguidas · B</span></div>
+          </div>
+          <div class="row section">
+            <button id="startBtn" class="admin-only">Iniciar jogo</button>
+            <button id="pauseBtn" class="secondary admin-only" disabled>Pausar</button>
+            <button id="resetScoreBtn" class="secondary admin-only" disabled>Zerar placar</button>
+          </div>
+          <div class="row section">
+            <button id="finishBtn" class="warning admin-only" disabled>Encerrar partida</button>
+          </div>
+          <div id="gameNotice" class="notice">Confirme a presença dos jogadores disponíveis. A formação exige um goleiro por time e a quantidade de jogadores definida nas configurações.</div>
+        </div>
+
+        <div id="penaltyPanel" class="panel section hidden">
+          <h2>Disputa de pênaltis</h2>
+          <p class="muted">Cobranças alternadas: três jogadores por equipe. Persistindo o empate, inicia-se a cobrança alternada individual (morte súbita).</p>
+          <div class="penalty">
+            <div class="penaltybox"><h3>TIME A · <span id="penA">0</span></h3><div id="penInfoA" class="muted">Cobranças: 0/3</div><button id="penGoalA" class="small admin-only">Gol A</button> <button id="penMissA" class="secondary small admin-only">Perdeu A</button></div>
+            <div class="penaltybox"><h3>TIME B · <span id="penB">0</span></h3><div id="penInfoB" class="muted">Cobranças: 0/3</div><button id="penGoalB" class="small admin-only">Gol B</button> <button id="penMissB" class="secondary small admin-only">Perdeu B</button></div>
+          </div>
+          <div class="row section"><button id="cancelPenalty" class="secondary small admin-only">Cancelar disputa</button></div>
+        </div>
+      </section>
+
+      <section id="tab-jogadores" class="hidden">
+        <div class="grid">
+          <div class="panel">
+            <h2>Cadastro de jogadores</h2>
+            <div class="row admin-only">
+              <div class="field"><label>Nome do jogador</label><input id="playerName" type="text" maxlength="70" placeholder="Nome"></div>
+              
+              <button id="addPlayerBtn">Adicionar</button>
+            </div>
+            <div class="notice" id="playerAdminHint">Para cadastrar jogadores e alterar presença, entre em <b>Entrar</b>. A consulta é pública.</div>
+            <div class="row between section"><h2>Lista de jogadores</h2><span id="playerCount" class="muted">0 jogadores</span></div>
+            <p class="muted attendance-legend">? Na lista, ainda não chegou · V Chegou e pode jogar · X Ausente / foi embora</p>
+            <div id="playersList" class="player-list"><div class="empty">Nenhum jogador cadastrado.</div></div>
+          </div>
+          <div class="panel">
+            <h2>Fila de espera</h2>
+            <p class="muted">Próximos jogadores a entrar em campo.</p>
+            <div id="queueList" class="player-list"><div class="empty">Fila vazia.</div></div>
+            <div class="notice">A fila é atualizada conforme a rotação das equipes.</div>
+            <button id="clearSessionBtn" class="danger small admin-only">ENCERRAR JOGO · APAGAR TUDO</button>
+          </div>
+        </div>
+      </section>
+
+      <section id="tab-historico" class="hidden">
+        <div class="panel history-panel">
+          <div class="history-heading"><div><h2>🏆 Ranking dos jogadores</h2><p class="muted">Desempenho acumulado · gols, vitórias e partidas.</p></div><span class="ranking-live">RANKING</span></div>
+          <div id="rankingList"><div class="empty">Ainda não há jogadores para o ranking.</div></div>
+          <div class="section match-history-section">
+            <div class="history-heading"><div><h2>📋 Histórico de partidas</h2><p class="muted">Resultados e escalações das partidas encerradas.</p></div></div>
+            <div id="matchHistoryList"><div class="empty">Nenhuma partida finalizada.</div></div>
+          </div>
+        </div>
+      </section>
+      <div class="footer">FUTEBOL-DETRAN · Aplicação compartilhada · Supabase Realtime · Desenvolvido por Lincon Eduardo</div>
+    </main>
+  </div>
+
+<script>
+/*
+ * Configure somente a URL e a chave publishable/anon do Supabase.
+ * Nunca coloque a chave service_role neste arquivo.
+ */
+const SUPABASE_URL = "https://wrjyazsljqeflmqxnvca.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_Ytf9Ml7aN610flv3mQtiiw_xtscf65h";
+
+const $ = (id) => document.getElementById(id);
+const isConfigured = !SUPABASE_URL.includes("SEU-PROJETO") && !SUPABASE_ANON_KEY.includes("SUA_CHAVE");
+let supabaseClient = null, state = null, realtimeChannel = null, timerInterval = null, saveInProgress = false;
+let localTimerRunning = false, localTimerEnd = null;
+
+const emptyState = () => ({
+  version: 0, sessionStartedAt: null, matchNumber: 0, firstMatch: true,
+  players: [], teams: { A: [], B: [] }, score: { A: 0, B: 0 },
+  streak: { A: 0, B: 0 }, match: { active: false, startedAt: null, remainingSeconds: 600, running: false },
+  config: { matchMinutes: 10, playersPerTeam: 7, goalsToWin: 2, consecutiveWinsToRotate: 3, friendlyFut: false, penaltiesFirstMatch: false },
+  penalties: null, history: [], currentMatchScorers: [], currentMatchParticipants: { A: [], B: [] }, lastUpdatedAt: null
+});
+const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
+const escapeHtml = (v) => String(v ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const localNow = () => new Date();
+const cutoffPassed = (date = new Date()) => date.getHours() > 19 || (date.getHours() === 19 && date.getMinutes() > 30);
+const playerStatus = p => p.status || (p.active === false ? "ausente" : p.confirmed ? "confirmado" : "pendente");
+function queueOrderValue(player){
+  const explicit=Number(player.queueOrder);
+  if(Number.isFinite(explicit) && player.queueOrder!==null && player.queueOrder!==undefined)return explicit;
+  const timestamp=Date.parse(player.confirmedAt||"");
+  return Number.isFinite(timestamp)?timestamp:Number.MAX_SAFE_INTEGER;
+}
+const sortQueue = (players) => players
+  .filter(p => p.active !== false && playerStatus(p) === "confirmado" && p.confirmed && !p.team)
+  .sort((a,b) => queueOrderValue(a)-queueOrderValue(b) || a.name.localeCompare(b.name,"pt-BR"));
+function nextQueueOrder(players){
+  return players.reduce((max,p)=>Math.max(max,Number.isFinite(Number(p.queueOrder))?Number(p.queueOrder):-1),-1)+1;
+}
+function playerGamesInState(sourceState,playerId){
+  let games=0;
+  for(const match of (sourceState.history||[])){
+    const playedA=(match.playersA||[]).some(p=>(typeof p==="string"?p:p.id)===playerId);
+    const playedB=(match.playersB||[]).some(p=>(typeof p==="string"?p:p.id)===playerId);
+    if(playedA||playedB)games++;
+  }
+  return games;
+}
+function shuffled(items){
+  const result=[...items];
+  for(let i=result.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[result[i],result[j]]=[result[j],result[i]];}
+  return result;
+}
+function notify(message, warning=false){ const el=$("gameNotice"); el.textContent=message; el.className="notice"+(warning?" warn":""); }
+function isAdmin(){ return window.__futebolAdmin === true; }
+function showAdminLogin(message=""){
+  $("adminLoginModal").classList.remove("hidden");
+  $("authMessage").textContent=message;
+  $("authMessage").classList.toggle("hidden",!message);
+}
+function hideAdminLogin(){
+  $("adminLoginModal").classList.add("hidden");
+  $("authMessage").classList.add("hidden");
+  $("authMessage").textContent="";
+}
+function setAdminMode(enabled){
+  window.__futebolAdmin=!!enabled;
+  document.querySelectorAll(".admin-only").forEach(el=>el.classList.toggle("hidden",!enabled));
+  if($("playerAdminHint"))$("playerAdminHint").classList.toggle("hidden",!!enabled);
+  const button=$("adminLoginBtn");
+  button.textContent=enabled?"Sair":"🔑 Entrar";
+  button.title=enabled?"Sair da administração":"Entrar como administrador";
+  button.classList.toggle("danger",!!enabled);
+  if(state){
+    renderPlayers();
+    renderTeamPlayers("A");renderTeamPlayers("B");
+    renderQueue();renderHistory();renderPenalties();
+  }
+}
+
+async function loadState(){
+  // Leitura pública: não depende de autenticação administrativa.
+  const {data,error}=await supabaseClient.from("futebol_estado").select("estado,versao").eq("id",1).single();
+  if(error) throw error;
+  state = {...emptyState(), ...(data.estado || {}), version:data.versao};
+  state.config = {...emptyState().config, ...(state.config || {})};
+  if(!Array.isArray(state.history))state.history=[];
+  if(!Array.isArray(state.currentMatchScorers))state.currentMatchScorers=[];
+  if(!state.currentMatchParticipants)state.currentMatchParticipants={A:[...(state.teams?.A||[])],B:[...(state.teams?.B||[])]};
+  state.players=(state.players||[]).map(p=>({...p,active:p.active!==false,status:p.status||(p.active===false?"ausente":p.confirmed?"confirmado":"pendente")}));
+  // Compatibilidade com filas criadas antes do campo queueOrder.
+  const legacyQueue=state.players.filter(p=>p.confirmed&&!p.team&&playerStatus(p)==="confirmado")
+    .sort((a,b)=>(Date.parse(a.confirmedAt||"")||0)-(Date.parse(b.confirmedAt||"")||0));
+  let nextOrder=0;
+  for(const player of legacyQueue){
+    if(player.queueOrder===null||player.queueOrder===undefined||!Number.isFinite(Number(player.queueOrder)))player.queueOrder=nextOrder;
+    nextOrder=Math.max(nextOrder,Number(player.queueOrder)+1);
+  }
+  render();
+}
+async function saveState(nextState){
+  if(!isAdmin()) throw new Error("Somente o administrador pode alterar a sessão.");
+  if(saveInProgress) throw new Error("Já existe uma gravação em andamento. Aguarde a sincronização.");
+  saveInProgress=true;
+  try{
+    const {data,error}=await supabaseClient.rpc("futebol_salvar_estado",{p_estado:nextState,p_versao:state.version});
+    if(error) throw error;
+    state={...nextState,version:data};
+    render();
+  }finally{saveInProgress=false;}
+}
+async function mutate(fn){
+  if(!isAdmin()){notify("Entre como administrador para realizar esta operação.",true);return false;}
+  const next=structuredClone(state);
+  try{
+    fn(next);
+    next.lastUpdatedAt=new Date().toISOString();
+    await saveState(next);
+    return true;
+  }catch(e){
+    notify("Não foi possível salvar: "+(e?.message||String(e)),true);
+    await loadState().catch(()=>{});
+    return false;
+  }
+}
+function playerById(id){return state.players.find(p=>p.id===id);}
+function teamPlayers(team){return (state.teams[team]||[]).map(playerById).filter(Boolean);}
+function teamName(team){return team==="A"?"Time A":"Time B";}
+function teamText(team){return teamPlayers(team).map(p=>p.name+(p.goalkeeper?" (G)":"")).join(" · ")||"Aguardando formação";}
+function renderTeamPlayers(team){
+  const container=$("team"+team+"List");
+  const players=teamPlayers(team);
+  if(!players.length){container.innerHTML='<div class="team-empty">Aguardando formação</div>';return;}
+  container.innerHTML=players.map(p=>{
+    const stats=calculatePlayerStats(p.id);
+    const inCurrentMatch=!!state.match.active;
+    const currentGoals=(state.currentMatchScorers||[]).filter(g=>g.playerId===p.id).length;
+    const displayedGames=stats.games+(inCurrentMatch?1:0);
+    const displayedGoals=stats.goals+currentGoals;
+    return `<div class="team-player">
+      <span class="team-player-info">
+        <span class="team-player-name">${escapeHtml(p.name)}${p.goalkeeper?' <b class="tag gold">G</b>':''}</span>
+        <small class="team-player-meta">⚽ ${displayedGoals} gols <span>·</span> 🎮 ${displayedGames} jogos</small>
+      </span>
+      <span class="team-player-actions">${isAdmin()&&state.match.active?`<button type="button" class="score-player" data-score-team="${team}" data-score-player="${p.id}" aria-label="Registrar gol de ${escapeHtml(p.name)}" title="Registrar gol">⚽</button><button type="button" class="sub-player" data-sub-team="${team}" data-sub-player="${p.id}" aria-label="Substituir ${escapeHtml(p.name)}" title="Substituir jogador">🔄</button>`:""}</span>
+    </div>`;
+  }).join("");
+}
+function render(){
+  if(!state)return;
+  $("scoreA").textContent=state.score.A;$("scoreB").textContent=state.score.B;
+  renderTeamPlayers("A");renderTeamPlayers("B");
+  $("winsA").textContent=state.streak.A;$("winsB").textContent=state.streak.B;
+  $("matchNumber").textContent=state.match.active?"Partida "+state.matchNumber:"Partida "+(state.matchNumber||"não iniciada");
+  $("queueCount").textContent=sortQueue(state.players).length;
+  $("playerCount").textContent=state.players.length+" jogadores";
+  $("startBtn").disabled=(state.match.active&&state.match.running)||!!state.penalties;
+  $("pauseBtn").disabled=!state.match.active || !state.match.running;
+  $("resetScoreBtn").disabled=!state.match.active;
+  $("finishBtn").disabled=!state.match.active;
+  const visibleRemaining=state.match.running&&state.match.startedAt?Math.max(0,state.match.remainingSeconds-Math.floor((Date.now()-new Date(state.match.startedAt).getTime())/1000)):state.match.remainingSeconds;
+  $("timer").textContent=formatTime(visibleRemaining);
+  const config=gameConfig();
+  $("timerStatus").textContent=state.firstMatch&&state.matchNumber===1
+    ? `Primeira partida: ${config.matchMinutes} minutos completos, independentemente do placar.`
+    : `Partida: ${config.matchMinutes} minutos ou ${config.goalsToWin} gols.`;
+  renderPlayers();renderQueue();renderHistory();renderPenalties();
+}
+function formatTime(sec){sec=Math.max(0,sec|0);return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");}
+function calculatePlayerStats(playerId){
+  const stats={games:0,wins:0,losses:0,goals:0};
+  for(const match of (state.history||[])){
+    const a=match.playersA||[], b=match.playersB||[];
+    const inA=a.some(p=>(typeof p==="string"?p:p.id)===playerId);
+    const inB=b.some(p=>(typeof p==="string"?p:p.id)===playerId);
+    if(inA||inB){
+      stats.games++;
+      if(match.winnerTeam==="A"&&inA || match.winnerTeam==="B"&&inB)stats.wins++;
+      else if(match.winnerTeam==="A"&&inB || match.winnerTeam==="B"&&inA)stats.losses++;
+    }
+    stats.goals+=(match.scorers||[]).filter(g=>g.playerId===playerId).length;
+  }
+  return stats;
+}
+function attendanceIcon(status){return status==="confirmado"?"V":status==="ausente"?"X":"?";}
+function renderPlayers(){
+  const list=$("playersList");
+  if(!state.players.length){list.innerHTML='<div class="empty">Nenhum jogador cadastrado.</div>';$("playerCount").textContent="0 jogadores";return;}
+  const ordered=[...state.players].sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
+  list.innerHTML=ordered.map(p=>{
+    const status=playerStatus(p);
+    return `<div class="player roster-row"><div class="roster-status">${isAdmin()?`<button type="button" class="status-btn status-${status}" data-action="cycle-status" data-id="${p.id}" title="Alterar presença: ? pendente, V chegou, X ausente">${attendanceIcon(status)}</button>`:`<span class="status-view status-${status}">${attendanceIcon(status)}</span>`}</div><div class="roster-name"><span class="name ${status==='ausente'?'name-absent':''}">${escapeHtml(p.name)}</span>${p.goalkeeper?'<span class="tag gold">G</span>':''}${p.team?`<span class="tag gray">Time ${p.team}</span>`:''}</div>${isAdmin()?`<div class="roster-actions"><button type="button" class="keeper-toggle ${p.goalkeeper?'keeper-active':''}" data-action="toggle-goalkeeper" data-id="${p.id}" title="${p.goalkeeper?'Remover posição de goleiro':'Definir como goleiro'}" aria-label="${p.goalkeeper?'Remover posição de goleiro':'Definir como goleiro'}">🧤</button><button type="button" class="delete-player" data-action="delete" data-id="${p.id}" title="Excluir jogador e todo o seu histórico">🗑️</button></div>`:''}</div>`;
+  }).join("");
+  $("playerCount").textContent=state.players.length+" jogadores";
+}
+function renderQueue(){
+  const q=sortQueue(state.players),list=$("queueList");
+  if(!q.length){list.innerHTML='<div class="empty">Fila vazia.</div>';return;}
+  list.innerHTML=q.map((p,i)=>{
+    const activeNow=state.match?.active&&(state.currentMatchParticipants?.A||[]).concat(state.currentMatchParticipants?.B||[]).includes(p.id);
+    const games=playerGamesInState(state,p.id)+(activeNow?1:0);
+    return `<div class="queue-row">
+      <div class="queue-position">${i+1}º</div>
+      <div class="queue-player-main"><div class="queue-player-name">${escapeHtml(p.name)}${p.goalkeeper?'<span class="tag gold">G</span>':''}</div><div class="queue-player-games">${games} ${games===1?"partida":"partidas"}</div></div>
+      ${isAdmin()?`<div class="queue-actions"><button type="button" class="queue-move" data-queue-move="-1" data-queue-id="${p.id}" aria-label="Subir ${escapeHtml(p.name)}" title="Subir" ${i===0?"disabled":""}>▲</button><button type="button" class="queue-move" data-queue-move="1" data-queue-id="${p.id}" aria-label="Descer ${escapeHtml(p.name)}" title="Descer" ${i===q.length-1?"disabled":""}>▼</button></div>`:""}
+    </div>`;
+  }).join("");
+}
+function renderHistory(){
+  const ranking=$("rankingList"),matches=$("matchHistoryList");
+  const rows=state.players
+    .map(p=>({player:p,...calculatePlayerStats(p.id)}))
+    .sort((a,b)=>b.wins-a.wins||b.goals-a.goals||a.losses-b.losses||a.player.name.localeCompare(b.player.name,"pt-BR"));
+  if(!rows.length){
+    ranking.innerHTML='<div class="empty">Ainda não há jogadores para o ranking.</div>';
+  }else{
+    const maxGoals=Math.max(1,...rows.map(r=>r.goals));
+    const medal=["🥇","🥈","🥉"];
+    const podium=rows.slice(0,3).map((r,i)=>`
+      <div class="podium-card podium-${i+1}">
+        <div class="podium-medal">${medal[i]}</div>
+        <div class="podium-rank">${i+1}º LUGAR</div>
+        <div class="podium-name">${escapeHtml(r.player.name)}</div>
+        <div class="podium-wins"><strong>${r.wins}</strong><span>VITÓRIAS</span></div>
+        <div class="podium-metrics">
+          <div class="podium-metric"><span class="podium-metric-icon">⚽</span><strong>${r.goals}</strong><small>GOLS</small></div>
+          <div class="podium-metric"><span class="podium-metric-icon">🎮</span><strong>${r.games}</strong><small>JOGOS</small></div>
+          <div class="podium-metric"><span class="podium-metric-icon">✕</span><strong>${r.losses}</strong><small>DERROTAS</small></div>
+        </div>
+      </div>`).join("");
+    const list=rows.slice(3).map((r,index)=>`
+      <div class="rank-row">
+        <div class="rank-number">${index+4}</div>
+        <div class="rank-main">
+          <div class="rank-name">${escapeHtml(r.player.name)}</div>
+          <div class="rank-goal-track"><span style="width:${Math.round((r.goals/maxGoals)*100)}%"></span></div>
+        </div>
+        <div class="rank-stat rank-goals"><strong>${r.goals}</strong><small>GOLS</small></div>
+        <div class="rank-stat"><strong>${r.games}</strong><small>JOGOS</small></div>
+        <div class="rank-stat"><strong>${r.wins}</strong><small>VIT.</small></div>
+      </div>`).join("");
+    const scrollRanking=list
+      ? `<div class="ranking-scroll" tabindex="0" aria-label="Ranking a partir do quarto lugar"><div class="ranking-list">${list}</div></div>`
+      : "";
+    ranking.innerHTML=`<div class="ranking-podium">${podium}</div>${scrollRanking}`;
+  }
+  if(!state.history.length){
+    matches.innerHTML='<div class="empty">Nenhuma partida finalizada.</div>';
+    return;
+  }
+  matches.innerHTML=`<div class="match-history-scroll" tabindex="0" aria-label="Histórico de partidas">`+[...state.history].reverse().map(h=>{
+    const scorers=(h.scorers||[]).map(g=>escapeHtml(g.playerName||"Jogador")+(g.team?` (Time ${g.team})`:"")).join(", ")||"Sem gols identificados";
+    const penaltyScorers=(h.penaltyScorers||[]).map(g=>escapeHtml(g.playerName||"Jogador")+(g.team?` (Time ${g.team})`:"")).join(", ");
+    const penaltySummary=Number.isInteger(h.penaltyScoreA)&&Number.isInteger(h.penaltyScoreB)
+      ? `<div class="history-match-penalties">🥅 Pênaltis: ${h.penaltyScoreA} × ${h.penaltyScoreB}${penaltyScorers?` · Gols: ${penaltyScorers}`:""}</div>`:"";
+    const names=arr=>(arr||[]).map(p=>escapeHtml(typeof p==="string"?(playerById(p)?.name||"Jogador removido"):p.name)).join(", ");
+    const resultClass=String(h.result||"").toLowerCase().includes("time a")?"result-a":String(h.result||"").toLowerCase().includes("time b")?"result-b":"result-draw";
+    return `<article class="history-match-card">
+      <div class="history-match-top"><span class="history-match-number">PARTIDA ${h.number}</span><span class="history-match-date">${new Date(h.finishedAt).toLocaleString("pt-BR")}</span></div>
+      <div class="history-match-score"><strong>${h.scoreA}</strong><span>×</span><strong>${h.scoreB}</strong></div>
+      <div class="history-match-result ${resultClass}">${escapeHtml(h.result)}</div>
+      <div class="history-match-teams"><div><b>TIME A</b><span>${names(h.playersA)||"—"}</span></div><div><b>TIME B</b><span>${names(h.playersB)||"—"}</span></div></div>
+      <div class="history-match-scorers">⚽ ${scorers}</div>
+      ${penaltySummary}
+    </article>`;
+  }).join("")+`</div>`;
+}
+function renderPenalties(){
+  const p=state.penalties;
+  const firstMatchMode=p?.mode==="first-match";
+  $("penaltyPanel").classList.toggle("hidden",!p||firstMatchMode);
+  $("firstMatchPenaltyModal").classList.toggle("hidden",!firstMatchMode);
+  if(!p)return;
+  if(firstMatchMode){
+    $("firstPenaltyScoreA").textContent=p.scoreA;
+    $("firstPenaltyScoreB").textContent=p.scoreB;
+    $("firstPenaltyKicksA").textContent=`${p.kicksA} cobranças`;
+    $("firstPenaltyKicksB").textContent=`${p.kicksB} cobranças`;
+    $("firstPenaltyTurn").textContent=teamName(p.turn).toUpperCase();
+    const currentTeamKicks=p.turn==="A"?p.kicksA:p.kicksB;
+    $("firstPenaltyRound").textContent=currentTeamKicks<3
+      ? `Série inicial · cobrança ${currentTeamKicks+1} de 3`
+      : `Morte súbita · rodada ${currentTeamKicks-2}`;
+    const currentPlayers=teamPlayers(p.turn);
+    $("firstPenaltyScorer").innerHTML=currentPlayers.length
+      ? currentPlayers.map(player=>`<option value="${player.id}">${escapeHtml(player.name)}</option>`).join("")
+      : '<option value="">Nenhum jogador encontrado neste time</option>';
+    $("firstPenaltyScorer").disabled=!isAdmin()||p.finished||!currentPlayers.length;
+    $("firstPenaltyGoal").disabled=!isAdmin()||p.finished||!currentPlayers.length;
+    $("firstPenaltyMiss").disabled=!isAdmin()||p.finished;
+    $("firstPenaltyWaiting").classList.toggle("hidden",isAdmin());
+    $("firstPenaltyAdminControls").classList.toggle("hidden",!isAdmin());
+    $("closeFirstPenalty").classList.toggle("hidden",!isAdmin());
+    return;
+  }
+  $("penA").textContent=p.scoreA;$("penB").textContent=p.scoreB;
+  $("penInfoA").textContent=`Cobranças: ${p.kicksA}${p.kicksA<3?"/3":" · morte súbita"}`;
+  $("penInfoB").textContent=`Cobranças: ${p.kicksB}${p.kicksB<3?"/3":" · morte súbita"}`;
+  ["penGoalA","penMissA","penGoalB","penMissB"].forEach(id=>$(id).disabled=p.finished);
+}
+async function firstMatchPenaltyKick(scored){
+  if(!isAdmin())return notify("Somente o administrador pode registrar pênaltis.",true);
+  if(state.penalties?.mode!=="first-match"||state.penalties.finished)return;
+  const p=structuredClone(state.penalties);
+  const team=p.turn;
+  const playerId=$("firstPenaltyScorer").value;
+  let scorer=null;
+  if(scored){
+    scorer=state.players.find(player=>player.id===playerId);
+    if(!scorer||!state.teams[team].includes(playerId)){
+      notify("Selecione um jogador do time que está cobrando.",true);
+      return;
+    }
+  }
+  const kickKey=team==="A"?"kicksA":"kicksB";
+  const scoreKey=team==="A"?"scoreA":"scoreB";
+  p[kickKey]++;
+  if(scored){
+    p[scoreKey]++;
+    p.scorers=p.scorers||[];
+    p.scorers.push({playerId:scorer.id,playerName:scorer.name,team,at:new Date().toISOString()});
+  }
+  p.turn=team==="A"?"B":"A";
+  const bothCompletedRound=p.kicksA>=3&&p.kicksB>=3&&p.kicksA===p.kicksB;
+  if(bothCompletedRound&&p.scoreA!==p.scoreB)p.finished=true;
+  if(p.finished){
+    const saved=await mutate(s=>{s.penalties=p;});
+    if(saved)await resolveResult(p.scoreA>p.scoreB?"A":"B","Vitória nos pênaltis");
+    return;
+  }
+  await mutate(s=>{s.penalties=p;});
+}
+function runTimerFromPersistedState(){
+  clearInterval(timerInterval);
+  if(!state?.match?.active || !state.match.running || !state.match.startedAt)return;
+  const elapsed=Math.max(0,Math.floor((Date.now()-new Date(state.match.startedAt).getTime())/1000));
+  const remaining=Math.max(0,state.match.remainingSeconds-elapsed);
+  localTimerEnd=Date.now()+remaining*1000;
+  localTimerRunning=true;
+  $("timer").textContent=formatTime(remaining);
+  if(remaining===0){
+    localTimerRunning=false;
+    if(isAdmin())completeExpiredMatch();
+    return;
+  }
+  timerInterval=setInterval(()=>{
+    const seconds=Math.max(0,Math.ceil((localTimerEnd-Date.now())/1000));
+    $("timer").textContent=formatTime(seconds);
+    if(seconds===0){
+      clearInterval(timerInterval);localTimerRunning=false;
+      if(isAdmin())completeExpiredMatch();
+    }
+  },250);
+}
+async function completeExpiredMatch(){
+  const saved=await mutate(s=>{s.match.remainingSeconds=0;s.match.running=false;s.match.startedAt=null;});
+  if(saved)await finishMatch("tempo");
+}
+async function startTimer(){
+  if(!isAdmin())return notify("Somente o administrador pode controlar o cronômetro.",true);
+  if(!state.match.active||state.match.running)return;
+  const saved=await mutate(s=>{s.match.running=true;s.match.startedAt=new Date().toISOString();});
+  if(saved)runTimerFromPersistedState();
+  return saved;
+}
+async function pauseTimer(){
+  if(!isAdmin())return notify("Somente o administrador pode controlar o cronômetro.",true);
+  if(!state.match.running)return;
+  const remaining=Math.max(0,Math.ceil((localTimerEnd-Date.now())/1000));
+  clearInterval(timerInterval);localTimerRunning=false;
+  await mutate(s=>{s.match.remainingSeconds=remaining;s.match.running=false;s.match.startedAt=null;});
+}
+function gameConfig(sourceState=state){
+  return {...emptyState().config, ...(sourceState?.config||{})};
+}
+function playerGoalsInState(sourceState,playerId){
+  let goals=0;
+  for(const match of (sourceState.history||[])){
+    goals+=(match.scorers||[]).filter(g=>g.playerId===playerId).length;
+  }
+  return goals;
+}
+function setRuleToggle(id,enabled){
+  const button=$(id);
+  button.dataset.enabled=enabled?"true":"false";
+  button.setAttribute("aria-pressed",enabled?"true":"false");
+  button.textContent=enabled?"ATIVADO":"DESATIVADO";
+  button.classList.toggle("is-enabled",enabled);
+}
+function showGameSettings(){
+  if(!isAdmin())return;
+  const config=gameConfig();
+  $("settingMatchMinutes").value=config.matchMinutes;
+  $("settingPlayersPerTeam").value=config.playersPerTeam;
+  $("settingGoalsToWin").value=config.goalsToWin;
+  $("settingConsecutiveWins").value=config.consecutiveWinsToRotate;
+  $("settingFriendlyFut").dataset.enabled=config.friendlyFut?"true":"false";
+  $("settingFriendlyFut").setAttribute("aria-pressed",config.friendlyFut?"true":"false");
+  $("settingFriendlyFut").textContent=`Botão FriendlyFut: ${config.friendlyFut?"ATIVADO":"DESATIVADO"}`;
+  $("settingFriendlyFut").classList.toggle("is-enabled",!!config.friendlyFut);
+  setRuleToggle("settingPenaltiesFirstMatch",!!config.penaltiesFirstMatch);
+  $("settingsMessage").classList.add("hidden");
+  $("gameSettingsModal").classList.remove("hidden");
+}
+function closeGameSettings(){$("gameSettingsModal").classList.add("hidden");}
+async function saveGameSettings(){
+  if(!isAdmin())return;
+  const values={
+    matchMinutes:Number($("settingMatchMinutes").value),
+    playersPerTeam:Number($("settingPlayersPerTeam").value),
+    goalsToWin:Number($("settingGoalsToWin").value),
+    consecutiveWinsToRotate:Number($("settingConsecutiveWins").value),
+    friendlyFut:$("settingFriendlyFut").dataset.enabled==="true",
+    penaltiesFirstMatch:$("settingPenaltiesFirstMatch").dataset.enabled==="true"
+  };
+  const rules=[
+    ["matchMinutes",1,60,"O tempo por partida deve ficar entre 1 e 60 minutos."],
+    ["playersPerTeam",2,15,"Cada time deve ter entre 2 e 15 jogadores, incluindo o goleiro."],
+    ["goalsToWin",1,20,"A quantidade de gols deve ficar entre 1 e 20."],
+    ["consecutiveWinsToRotate",1,20,"A sequência de vitórias deve ficar entre 1 e 20."]
+  ];
+  for(const [key,min,max,message] of rules){
+    if(!Number.isInteger(values[key])||values[key]<min||values[key]>max){
+      $("settingsMessage").textContent=message;
+      $("settingsMessage").classList.remove("hidden");
+      return;
+    }
+  }
+  const saved=await mutate(s=>{s.config={...gameConfig(s),...values};});
+  if(saved){closeGameSettings();notify("Regras do jogo atualizadas e compartilhadas com todos.");}
+}
+function chooseInitialTeams(s){
+  const config=gameConfig(s);
+  const teamSize=config.playersPerTeam;
+  const fieldPerTeam=teamSize-1;
+  const eligible=sortQueue(s.players);
+  const keepers=eligible.filter(p=>p.goalkeeper);
+  const field=eligible.filter(p=>!p.goalkeeper);
+  if(keepers.length<2||field.length<fieldPerTeam*2){
+    throw new Error(`Para iniciar são necessários ${fieldPerTeam*2} jogadores de linha e pelo menos 2 goleiros confirmados (${teamSize} jogadores por time).`);
+  }
+  const selectedKeepers=keepers.slice(0,2);
+  const selectedField=field.slice(0,fieldPerTeam*2);
+  let a=[selectedKeepers[0]],b=[selectedKeepers[1]];
+  if(config.friendlyFut){
+    const ranked=selectedField
+      .map((player,index)=>({player,index,goals:playerGoalsInState(s,player.id)}))
+      .sort((x,y)=>y.goals-x.goals||x.index-y.index);
+    let goalsA=0,goalsB=0;
+    for(const entry of ranked){
+      if(a.length<teamSize&&(b.length>=teamSize||goalsA<=goalsB)){
+        a.push(entry.player);goalsA+=entry.goals;
+      }else{
+        b.push(entry.player);goalsB+=entry.goals;
+      }
+    }
+  }else{
+    const randomized=shuffled(selectedField);
+    a.push(...randomized.slice(0,fieldPerTeam));
+    b.push(...randomized.slice(fieldPerTeam,fieldPerTeam*2));
+  }
+  s.teams={A:a.map(p=>p.id),B:b.map(p=>p.id)};
+  s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+  s.players.forEach(p=>{p.team=null;if(a.includes(p)||b.includes(p)){p.team=a.includes(p)?"A":"B";p.confirmed=true;}});
+  s.currentMatchScorers=[];
+  if(!s.matchNumber)s.matchNumber=1;
+  s.firstMatch=(s.history||[]).length===0;
+  s.score={A:0,B:0};
+  if(s.firstMatch)s.streak={A:0,B:0};
+  s.match={active:true,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
+  if(!s.sessionStartedAt)s.sessionStartedAt=new Date().toISOString();
+}
+async function startMatch(){
+  if(!isAdmin())return notify("Somente o administrador pode iniciar a partida.",true);
+  try{
+    if(state.match.active){
+      if(state.match.running)return;
+      const resumed=await startTimer();
+      if(resumed)notify("Cronômetro iniciado.");
+      return;
+    }
+    const created=await mutate(s=>chooseInitialTeams(s));
+    if(!created)return;
+    const started=await startTimer();
+    if(started){runTimerFromPersistedState();notify(`Jogo iniciado. A primeira partida terá ${gameConfig().matchMinutes} minutos completos.`);}
+  }catch(e){notify(e.message,true);}
+}
+function queueSelection(s, count, needKeeper=false){
+  const q=sortQueue(s.players);
+  const selected=[];
+  if(needKeeper){const g=q.find(p=>p.goalkeeper);if(!g)return null;selected.push(g);}
+  for(const p of q){if(selected.length>=count)break;if(p.goalkeeper)continue;selected.push(p);}
+  return selected.length===count?selected:null;
+}
+function clearTeamAssignments(s,ids){
+  for(const p of s.players)if(ids.includes(p.id))p.team=null;
+}
+function chooseOutgoingByGames(s,players,count){
+  const groups=new Map();
+  for(const p of players){
+    const games=playerGamesInState(s,p.id);
+    if(!groups.has(games))groups.set(games,[]);
+    groups.get(games).push(p);
+  }
+  const selected=[];
+  for(const games of [...groups.keys()].sort((a,b)=>b-a)){
+    for(const p of shuffled(groups.get(games))){
+      if(selected.length>=count)break;
+      selected.push(p);
+    }
+    if(selected.length>=count)break;
+  }
+  return selected;
+}
+function appendPlayersToQueue(s,players){
+  let order=nextQueueOrder(s.players);
+  for(const p of players){
+    p.team=null;p.status="confirmado";p.confirmed=true;p.active=true;
+    p.confirmedAt=new Date().toISOString();p.queueOrder=order++;
+  }
+}
+function startNextMatch(s,winner,loser){
+  const config=gameConfig(s);
+  const findPlayer=id=>s.players.find(p=>p.id===id);
+  const winnerIds=[...(s.teams[winner]||[])],loserIds=[...(s.teams[loser]||[])];
+
+  // Ao atingir o limite configurado, os dois times retornam à fila.
+  if(s.streak[winner]>=config.consecutiveWinsToRotate){
+    const departing=[...new Set([...winnerIds,...loserIds])].map(findPlayer).filter(Boolean);
+    appendPlayersToQueue(s,departing);
+    s.teams={A:[],B:[]};
+    s.players.forEach(p=>{p.team=null;});
+    s.streak={A:0,B:0};
+    s.matchNumber++;
+    s.firstMatch=false;
+    s.score={A:0,B:0};
+    s.match={active:false,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
+    s.currentMatchScorers=[];
+    s.currentMatchParticipants={A:[],B:[]};
+    s.penalties=null;
+    return;
+  }
+
+  const loserKeeperId=loserIds.find(id=>findPlayer(id)?.goalkeeper);
+  const losingFieldPlayers=loserIds.map(findPlayer).filter(p=>p&&!p.goalkeeper);
+  const queued=sortQueue(s.players);
+  const queuedKeepers=queued.filter(p=>p.goalkeeper);
+  const queuedFieldPlayers=queued.filter(p=>!p.goalkeeper);
+  const outgoingField=chooseOutgoingByGames(s,losingFieldPlayers,Math.min(losingFieldPlayers.length,queuedFieldPlayers.length));
+  let incomingField=queuedFieldPlayers.slice(0,outgoingField.length);
+
+  if(config.friendlyFut&&incomingField.length){
+    const winnerGoalTotal=winnerIds.reduce((sum,id)=>sum+playerGoalsInState(s,id),0);
+    const outgoingGoals=outgoingField.reduce((sum,p)=>sum+playerGoalsInState(s,p.id),0);
+    let projectedLoserGoals=loserIds.reduce((sum,id)=>sum+playerGoalsInState(s,id),0)-outgoingGoals;
+    const remaining=[...queuedFieldPlayers];
+    incomingField=[];
+    while(incomingField.length<outgoingField.length){
+      remaining.sort((a,b)=>{
+        const diffA=Math.abs(projectedLoserGoals+playerGoalsInState(s,a.id)-winnerGoalTotal);
+        const diffB=Math.abs(projectedLoserGoals+playerGoalsInState(s,b.id)-winnerGoalTotal);
+        return diffA-diffB||queueOrderValue(a)-queueOrderValue(b);
+      });
+      const candidate=remaining.shift();
+      if(!candidate)break;
+      incomingField.push(candidate);
+      projectedLoserGoals+=playerGoalsInState(s,candidate.id);
+    }
+  }
+
+  const replacements=new Map();
+  outgoingField.forEach((p,index)=>replacements.set(p.id,incomingField[index].id));
+  const newLoserIds=loserIds.map(id=>replacements.get(id)||id);
+
+  let outgoingKeeper=null,incomingKeeper=null;
+  if(loserKeeperId&&queuedKeepers.length){
+    outgoingKeeper=findPlayer(loserKeeperId);
+    incomingKeeper=queuedKeepers[0];
+    const keeperIndex=newLoserIds.indexOf(loserKeeperId);
+    if(keeperIndex>=0)newLoserIds[keeperIndex]=incomingKeeper.id;
+  }
+
+  appendPlayersToQueue(s,[...outgoingField,...(outgoingKeeper?[outgoingKeeper]:[])]);
+  for(const incoming of [...incomingField,...(incomingKeeper?[incomingKeeper]:[])]){
+    incoming.team=loser;incoming.status="confirmado";incoming.confirmed=true;incoming.active=true;incoming.played=true;
+  }
+  for(const outgoing of [...outgoingField,...(outgoingKeeper?[outgoingKeeper]:[])])outgoing.played=true;
+
+  s.teams[winner]=winnerIds;s.teams[loser]=newLoserIds;
+  for(const id of winnerIds){const p=findPlayer(id);if(p)p.team=winner;}
+  for(const id of newLoserIds){const p=findPlayer(id);if(p)p.team=loser;}
+
+  s.matchNumber++;s.firstMatch=false;s.score={A:0,B:0};
+  s.match={active:true,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
+  s.currentMatchScorers=[];
+  s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+  s.penalties=null;
+}
+async function finishMatch(reason="manual"){
+  if(!isAdmin())return notify("Somente o administrador pode encerrar a partida.",true);
+  if(!state.match.active)return;
+  if(state.match.running)await pauseTimer();
+  const a=state.score.A,b=state.score.B;
+  if(a===b && reason==="tempo" && state.firstMatch && state.matchNumber===1){
+    if(gameConfig().penaltiesFirstMatch){
+      const opened=await mutate(s=>{
+        s.match.active=false;s.match.running=false;s.match.startedAt=null;
+        s.penalties={mode:"first-match",scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1,scorers:[]};
+      });
+      if(opened)notify("Empate na primeira partida. Disputa de pênaltis iniciada.");
+      return;
+    }
+    await resolveFirstMatchDraw();
+    return;
+  }
+  if(a===b){
+    const streakWinner=state.streak.A>state.streak.B?"A":state.streak.B>state.streak.A?"B":null;
+    if(!streakWinner){await mutate(s=>{s.match.active=false;s.penalties={scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1};});notify("Empate sem time com sequência de vitórias. Decisão por pênaltis.",true);return;}
+    await resolveResult(streakWinner,"Empate: permanece o time com sequência de vitórias.");return;
+  }
+  await resolveResult(a>b?"A":"B",reason==="tempo"?"Vitória por tempo":`Vitória por ${gameConfig().goalsToWin} gols`);
+}
+async function resolveFirstMatchDraw(){
+  try{
+    await mutate(s=>{
+      const snapshot=ids=>(ids||[]).map(id=>{
+        const p=s.players.find(x=>x.id===id);
+        return p?{id:p.id,name:p.name,goalkeeper:!!p.goalkeeper}:{id,name:"Jogador removido"};
+      });
+      const participantsA=[...new Set([...(s.currentMatchParticipants?.A||[]),...s.teams.A])];
+      const participantsB=[...new Set([...(s.currentMatchParticipants?.B||[]),...s.teams.B])];
+      s.history.push({
+        number:s.matchNumber,scoreA:s.score.A,scoreB:s.score.B,winnerTeam:null,
+        result:"Empate",finishedAt:new Date().toISOString(),
+        playersA:snapshot(participantsA),playersB:snapshot(participantsB),
+        scorers:[...(s.currentMatchScorers||[])]
+      });
+      const participants=[...participantsA,...participantsB];
+      for(const player of s.players)if(participants.includes(player.id))player.played=true;
+      s.matchNumber++;s.firstMatch=false;s.score={A:0,B:0};
+      s.match={active:true,startedAt:null,remainingSeconds:gameConfig(s).matchMinutes*60,running:false};
+      s.currentMatchScorers=[];
+      s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+      s.penalties=null;
+    });
+    notify("A primeira partida terminou empatada. Os dois times permanecem para a próxima partida.");
+  }catch(e){notify("Não foi possível registrar o empate: "+e.message,true);}
+}
+async function resolveResult(winner,result){
+  const loser=winner==="A"?"B":"A";
+  try{
+    await mutate(s=>{
+      const snapshot=(ids)=>(ids||[]).map(id=>{const p=s.players.find(x=>x.id===id);return p?{id:p.id,name:p.name,goalkeeper:!!p.goalkeeper}: {id,name:"Jogador removido"};});
+      const participantsA=[...new Set([...(s.currentMatchParticipants?.A||[]),...s.teams.A])];
+      const participantsB=[...new Set([...(s.currentMatchParticipants?.B||[]),...s.teams.B])];
+      s.history.push({
+        number:s.matchNumber,scoreA:s.score.A,scoreB:s.score.B,winnerTeam:winner,
+        result:result+" · "+teamName(winner),finishedAt:new Date().toISOString(),
+        playersA:snapshot(participantsA),playersB:snapshot(participantsB),
+        scorers:[...(s.currentMatchScorers||[])],
+        penaltyScoreA:s.penalties?.mode==="first-match"?s.penalties.scoreA:null,
+        penaltyScoreB:s.penalties?.mode==="first-match"?s.penalties.scoreB:null,
+        penaltyScorers:s.penalties?.mode==="first-match"?[...(s.penalties.scorers||[])]:[]
+      });
+      // Todos os participantes, inclusive substituídos, contam como quem atuou.
+      const participants=[...participantsA,...participantsB];
+      for(const player of s.players)if(participants.includes(player.id))player.played=true;
+      s.streak[winner]++;s.streak[loser]=0;s.match.active=false;s.match.running=false;
+      startNextMatch(s,winner,loser);
+    });
+    if(state.teams.A.length&&state.teams.B.length)notify(`${teamName(winner)} permanece. Próxima partida preparada.`);
+    else notify("Limite de vitórias atingido: os dois times saíram. Inicie uma nova formação com os jogadores confirmados na fila.");
+  }catch(e){notify("Resultado registrado, mas não foi possível montar a próxima partida: "+e.message,true);}
+}
+async function penaltyKick(team,scored){
+  if(!isAdmin())return notify("Somente o administrador pode registrar pênaltis.",true);
+  if(!state.penalties||state.penalties.finished)return;
+  const p=structuredClone(state.penalties);
+  if(team!==p.turn){notify(`Agora é a cobrança do ${teamName(p.turn)}.`,true);return;}
+  const kickKey=team==="A"?"kicksA":"kicksB",scoreKey=team==="A"?"scoreA":"scoreB";
+  p[kickKey]++;if(scored)p[scoreKey]++;
+  p.turn=team==="A"?"B":"A";
+  // Após três cobranças para cada lado, a disputa termina somente quando ambos
+  // tiverem executado a cobrança da rodada. Em igualdade, segue morte súbita.
+  const bothCompletedSameRound=p.kicksA>=3&&p.kicksB>=3&&p.kicksA===p.kicksB;
+  if(bothCompletedSameRound&&p.scoreA!==p.scoreB)p.finished=true;
+  if(p.finished){
+    await mutate(s=>{s.penalties=p;});
+    await resolveResult(p.scoreA>p.scoreB?"A":"B","Vitória nos pênaltis");
+    return;
+  }
+  await mutate(s=>{s.penalties=p;});
+}
+async function registerGoal(team,playerId=null){
+  if(!isAdmin()||!state.match.active)return;
+  const success=await mutate(s=>{
+    s.score[team]++;
+    if(!Array.isArray(s.currentMatchScorers))s.currentMatchScorers=[];
+    if(playerId){const player=s.players.find(p=>p.id===playerId);if(!player||!s.teams[team].includes(playerId))throw new Error("O jogador selecionado não pertence ao time que marcou.");s.currentMatchScorers.push({playerId,playerName:player.name,team,at:new Date().toISOString()});}
+  });
+  if(!success)return;
+  if(!(state.firstMatch&&state.matchNumber===1) && state.score[team]>=gameConfig().goalsToWin)await finishMatch("gols");
+}
+
+async function moveQueuePlayer(playerId,direction){
+  if(!isAdmin())return notify("Somente o administrador pode reorganizar a fila.",true);
+  await mutate(s=>{
+    const queue=sortQueue(s.players);
+    const index=queue.findIndex(p=>p.id===playerId),target=index+Number(direction);
+    if(index<0||target<0||target>=queue.length)return;
+    queue.forEach((p,i)=>{if(p.queueOrder===null||p.queueOrder===undefined||!Number.isFinite(Number(p.queueOrder)))p.queueOrder=i;});
+    const current=queue[index].queueOrder;
+    queue[index].queueOrder=queue[target].queueOrder;
+    queue[target].queueOrder=current;
+  });
+}
+async function addPlayer(){
+  if(!isAdmin())return notify("Entre como administrador para cadastrar jogadores.",true);
+  const name=$("playerName").value.trim();
+  if(!name){notify("Informe o nome do jogador.",true);$("playerName").focus();return;}
+  const success=await mutate(s=>{
+    if(s.players.some(p=>p.name.trim().toLocaleLowerCase("pt-BR")===name.toLocaleLowerCase("pt-BR")))throw new Error("Já existe um jogador com esse nome.");
+    s.players.push({id:uid(),name,goalkeeper:false,active:true,status:"pendente",confirmed:false,confirmedAt:null,queueOrder:nextQueueOrder(s.players),played:false,team:null});
+  });
+  if(success){$("playerName").value="";$("playerName").focus();notify(`Jogador ${name} cadastrado com sucesso.`);}
+}
+async function playerAction(action,id){
+  if(!isAdmin())return notify("Somente o administrador pode alterar jogadores.",true);
+  if(action==="delete"){
+    const target=playerById(id);
+    if(!target)return;
+    if(!confirm(`Excluir ${target.name}? O jogador será removido da lista, da fila, das escalações e de todas as estatísticas e históricos. Essa ação não pode ser desfeita.`))return;
+  }
+  await mutate(s=>{
+    const p=s.players.find(x=>x.id===id);if(!p)return;
+    if(action==="cycle-status"){
+      const next={confirmado:"ausente",ausente:"pendente",pendente:"confirmado"}[playerStatus(p)]||"pendente";
+      p.status=next;p.confirmed=next==="confirmado";p.active=true;
+      if(next==="confirmado"){
+        p.confirmedAt=new Date().toISOString();
+        p.queueOrder=nextQueueOrder(s.players);
+      }else{p.confirmedAt=null;}
+    }
+    if(action==="toggle-goalkeeper"){
+      // A função é um atributo do jogador, não uma posição fixa na escalação.
+      // A alteração vale imediatamente para a validação de futuras substituições.
+      p.goalkeeper=!p.goalkeeper;
+    }
+    if(action==="delete"){
+      if(s.teams.A.includes(id))s.teams.A=s.teams.A.filter(x=>x!==id);
+      if(s.teams.B.includes(id))s.teams.B=s.teams.B.filter(x=>x!==id);
+      for(const side of ["A","B"])s.currentMatchParticipants[side]=(s.currentMatchParticipants?.[side]||[]).filter(x=>x!==id);
+      s.currentMatchScorers=(s.currentMatchScorers||[]).filter(g=>g.playerId!==id);
+      s.history=(s.history||[]).map(h=>({...h,playersA:(h.playersA||[]).filter(x=>(typeof x==="string"?x:x.id)!==id),playersB:(h.playersB||[]).filter(x=>(typeof x==="string"?x:x.id)!==id),scorers:(h.scorers||[]).filter(g=>g.playerId!==id)}));
+      s.players=s.players.filter(x=>x.id!==id);
+    }
+  });
+}
+let substitutionTarget=null;
+function openSubstitutionModal(team,outgoingId){
+  if(!isAdmin()||!state.match.active)return;
+  const outgoing=playerById(outgoingId);if(!outgoing)return;
+  const eligible=sortQueue(state.players).filter(p=>!!p.goalkeeper===!!outgoing.goalkeeper);
+  substitutionTarget={team,outgoingId};
+  $("substitutionDescription").textContent=`Substituir ${outgoing.name} do Time ${team}. Selecione um jogador da fila${outgoing.goalkeeper?" (goleiro)":" (jogador de linha)"}.`;
+  $("substitutionQueue").innerHTML=eligible.length?eligible.map(p=>`<button type="button" class="secondary substitution-option" data-substitute-id="${p.id}" style="width:100%;text-align:left;margin:3px 0">${escapeHtml(p.name)}${p.goalkeeper?" · Goleiro":""}</button>`).join(""):'<div class="empty">Não há jogadores disponíveis na fila para esta posição.</div>';
+  $("substitutionModal").classList.remove("hidden");
+}
+function closeSubstitutionModal(){substitutionTarget=null;$("substitutionModal").classList.add("hidden");}
+async function performSubstitution(incomingId){
+  if(!isAdmin()||!state.match.active||!substitutionTarget)return;
+  const {team,outgoingId}=substitutionTarget;
+  const saved=await mutate(s=>{
+    const outgoing=s.players.find(p=>p.id===outgoingId),incoming=s.players.find(p=>p.id===incomingId);
+    if(!outgoing||!incoming||!s.teams[team].includes(outgoingId))throw new Error("A escalação mudou. Atualize a página e tente novamente.");
+    if(incoming.team||playerStatus(incoming)!=="confirmado")throw new Error("O jogador selecionado não está mais disponível na fila.");
+    if(!!outgoing.goalkeeper!==!!incoming.goalkeeper)throw new Error("A substituição deve respeitar a posição de goleiro ou jogador de linha.");
+    s.teams[team]=s.teams[team].map(id=>id===outgoingId?incomingId:id);
+    outgoing.team=null;outgoing.status="ausente";outgoing.confirmed=false;outgoing.active=true;outgoing.confirmedAt=null;outgoing.played=true;
+    incoming.team=team;incoming.status="confirmado";incoming.confirmed=true;incoming.played=true;
+    if(!s.currentMatchParticipants)s.currentMatchParticipants={A:[],B:[]};
+    for(const id of [outgoingId,incomingId])if(!s.currentMatchParticipants[team].includes(id))s.currentMatchParticipants[team].push(id);
+  });
+  if(saved){closeSubstitutionModal();notify("Substituição realizada. O jogador que saiu foi marcado como ausente.");}
+}
+
+async function clearSession(){
+  if(!isAdmin())return notify("Somente o administrador pode encerrar o jogo.",true);
+  if(state.match.active || state.teams.A.length || state.teams.B.length){
+    if(!confirm("ENCERRAR JOGO apagará definitivamente a sessão atual, incluindo jogadores, escalações, fila, placares, gols, partidas e histórico. Essa ação não pode ser desfeita. Deseja continuar?"))return;
+  }else if(!confirm("Apagar todos os jogadores, partidas, gols, placares e históricos desta sessão? Essa ação não pode ser desfeita."))return;
+  clearInterval(timerInterval);localTimerRunning=false;localTimerEnd=null;
+  const success=await mutate(s=>{Object.assign(s,emptyState());});
+  if(success)notify("Jogo encerrado. Todos os dados da sessão foram removidos do banco de dados.");
+}
+
+function bindEvents(){
+  $("gameSettingsBtn").onclick=showGameSettings;
+  $("closeGameSettings").onclick=closeGameSettings;
+  $("saveGameSettings").onclick=saveGameSettings;
+  $("settingFriendlyFut").onclick=()=>{
+    const enabled=$("settingFriendlyFut").dataset.enabled!=="true";
+    setRuleToggle("settingFriendlyFut",enabled);
+  };
+  $("settingPenaltiesFirstMatch").onclick=()=>{
+    const enabled=$("settingPenaltiesFirstMatch").dataset.enabled!=="true";
+    setRuleToggle("settingPenaltiesFirstMatch",enabled);
+  };
+  $("gameSettingsModal").addEventListener("click",e=>{if(e.target===$("gameSettingsModal"))closeGameSettings();});
+  $("adminLoginBtn").onclick=async()=>{
+    if(isAdmin()){
+      const {error}=await supabaseClient.auth.signOut();
+      if(error)notify("Não foi possível sair: "+error.message,true);
+      return;
+    }
+    showAdminLogin();
+    $("email").focus();
+  };
+  $("cancelAdminLogin").onclick=hideAdminLogin;
+  $("loginBtn").onclick=async()=>{
+    const email=$("email").value.trim(),password=$("password").value;
+    if(!email||!password){showAdminLogin("Informe e-mail e senha.");return;}
+    $("loginBtn").disabled=true;
+    $("loginBtn").textContent="Entrando...";
+    try{
+      const {data,error}=await supabaseClient.auth.signInWithPassword({email,password});
+      if(error)throw error;
+      if(!data.session||!data.user)throw new Error("O Supabase Auth não retornou uma sessão válida.");
+      setAdminMode(true);
+      hideAdminLogin();
+      $("email").value="";$("password").value="";
+      notify("Acesso administrativo autorizado.");
+      render();
+    }catch(error){
+      showAdminLogin(error.message||"Falha na autenticação.");
+    }finally{
+      $("loginBtn").disabled=false;
+      $("loginBtn").textContent="Entrar";
+    }
+  };
+  $("password").onkeydown=e=>{if(e.key==="Enter")$("loginBtn").click();};
+  $("email").onkeydown=e=>{if(e.key==="Enter")$("password").focus();};
+  $("addPlayerBtn").onclick=addPlayer;$("playerName").onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addPlayer();}};
+  ["A","B"].forEach(team=>$("team"+team+"List").onclick=e=>{
+    const goal=e.target.closest("button[data-score-player]");
+    const sub=e.target.closest("button[data-sub-player]");
+    if(goal)registerGoal(team,goal.dataset.scorePlayer);
+    if(sub)openSubstitutionModal(team,sub.dataset.subPlayer);
+  });
+  $("cancelSubstitution").onclick=closeSubstitutionModal;
+  $("substitutionQueue").onclick=e=>{const b=e.target.closest("button[data-substitute-id]");if(b)performSubstitution(b.dataset.substituteId);};
+  $("playersList").onclick=e=>{const b=e.target.closest("button[data-action]");if(b)playerAction(b.dataset.action,b.dataset.id);};
+  $("queueList").onclick=e=>{const b=e.target.closest("button[data-queue-move]");if(b)moveQueuePlayer(b.dataset.queueId,Number(b.dataset.queueMove));};
+  $("startBtn").onclick=startMatch;$("pauseBtn").onclick=pauseTimer;
+  $("finishBtn").onclick=()=>finishMatch("manual");
+  $("resetScoreBtn").onclick=()=>mutate(s=>{s.score={A:0,B:0};});
+  $("clearSessionBtn").onclick=clearSession;
+  $("penGoalA").onclick=()=>penaltyKick("A",true);$("penMissA").onclick=()=>penaltyKick("A",false);
+  $("penGoalB").onclick=()=>penaltyKick("B",true);$("penMissB").onclick=()=>penaltyKick("B",false);
+  $("firstPenaltyGoal").onclick=()=>firstMatchPenaltyKick(true);
+  $("firstPenaltyMiss").onclick=()=>firstMatchPenaltyKick(false);
+  $("closeFirstPenalty").onclick=()=>notify("A disputa continua em andamento. O resultado será sincronizado para todos.");
+  $("cancelPenalty").onclick=()=>mutate(s=>{s.penalties=null;s.match.active=true;});
+  document.querySelectorAll(".tab").forEach(btn=>btn.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x===btn));
+    ["partida","jogadores","historico"].forEach(t=>$("tab-"+t).classList.toggle("hidden",t!==btn.dataset.tab));
+  });
+}
+async function boot(){
+  if(!isConfigured){
+    notify("Configure a URL e a chave pública do Supabase no início do index.html.",true);
+    return;
+  }
+  supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY,{
+    auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true,storageKey:"futebol-detran-auth-v1"}
+  });
+  bindEvents();
+  window.__futebolAdmin=false;
+  $("adminLoginBtn").textContent="🔑 Entrar";
+  document.querySelectorAll(".admin-only").forEach(el=>el.classList.add("hidden"));
+
+  // Carregamento público sempre ocorre antes de qualquer decisão de autenticação.
+  try{
+    await loadState();
+  }catch(e){
+    state=emptyState();
+    render();
+    notify("Falha ao carregar os dados públicos. Execute o SQL atualizado para liberar SELECT a anon: "+e.message,true);
+  }
+
+  realtimeChannel=supabaseClient.channel("futebol-estado-publico")
+    .on("postgres_changes",{event:"UPDATE",schema:"public",table:"futebol_estado",filter:"id=eq.1"},payload=>{
+      if(!saveInProgress && (!state || payload.new.versao>state.version)){
+        state={...emptyState(),...(payload.new.estado||{}),version:payload.new.versao};
+        render();
+        if(state.match?.running){if(!localTimerRunning)runTimerFromPersistedState();}
+        else{clearInterval(timerInterval);localTimerRunning=false;localTimerEnd=null;}
+      }
+    }).subscribe();
+
+  const {data:{session},error}=await supabaseClient.auth.getSession();
+  if(error)notify("Não foi possível restaurar a sessão administrativa: "+error.message,true);
+  setAdminMode(!!session);
+  if(state?.match?.running)runTimerFromPersistedState();
+  supabaseClient.auth.onAuthStateChange((event,session)=>{
+    if(event==="INITIAL_SESSION")return;
+    setAdminMode(!!session);
+    hideAdminLogin();
+    if(state)render();
+    if(session&&state?.match?.running)runTimerFromPersistedState();
+  });
+}
+boot();
+</script>
+</body>
+</html>
