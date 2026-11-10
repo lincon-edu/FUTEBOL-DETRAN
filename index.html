@@ -56,6 +56,7 @@
     .settings-bottom>span{font-size:9px;line-height:1.4;color:#849b8c;max-width:48%}
     .settings-bottom button{display:flex;align-items:center;gap:12px;padding:11px 15px;border-radius:10px}
     #settingsMessage{margin:0 18px 15px}
+    .goal-confirm-card{text-align:center;width:min(390px,100%)}.goal-confirm-icon{font-size:42px}.goal-confirm-card h2{margin:6px 0}.goal-confirm-card p{font-size:13px}.goal-confirm-card .row{display:grid;grid-template-columns:1fr 1fr}
     .first-penalty-card{width:min(520px,100%);padding:22px;background:linear-gradient(160deg,#17271e,#0d1712);border-color:#45634e}
     .penalty-modal-heading{text-align:center}
     .penalty-kicker{font-size:9px;letter-spacing:1.5px;font-weight:900;color:#9bd7ad}
@@ -244,6 +245,25 @@
     .penalty{grid-template-columns:1fr 1fr;gap:7px}.penaltybox{padding:9px}.penaltybox button{width:100%;margin:3px 0}
     .history-item{padding:12px 2px;line-height:1.5}.modal-overlay{align-items:flex-end;padding:0}.modal-card{width:100%;max-width:none;border-radius:18px 18px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));max-height:88dvh;overflow:auto}
     @media(min-width:700px){.top{padding:13px 18px}.grid{grid-template-columns:1fr 1fr}.player{flex-direction:row;align-items:center}.player>div:last-child{width:auto}.tabs{top:64px}.panel{padding:17px}}
+
+    @media(max-width:520px){
+      .scoreboard{grid-template-columns:minmax(0,1fr);gap:10px}.scoreboard .vs{display:none}
+      .team{padding:12px 11px;text-align:left}.team h3{font-size:12px;margin-bottom:3px}.score{font-size:42px;text-align:center}
+      .teamlist{margin-top:7px;min-height:0}.team-player{grid-template-columns:minmax(0,1fr) auto;gap:7px;padding:7px 2px;min-height:54px}
+      .team-player-name{font-size:13px;line-height:1.25}.team-player-meta{font-size:10px;white-space:normal}
+      .team-player-actions{min-width:94px;gap:8px}.score-player,.sub-player{width:42px;height:42px;min-height:42px;flex-basis:42px;font-size:20px;border-radius:11px}
+      .timer{font-size:clamp(42px,13vw,56px);margin:16px 0 2px}.statrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+      .row.section{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.row.section>button{width:100%;min-width:0;padding:10px 7px;font-size:12px}
+      .settings-card{width:100%;max-height:96dvh}.settings-hero{padding:14px}.settings-content{padding:4px 12px 8px}
+      .settings-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.settings-field{padding:9px 8px;min-width:0}
+      .settings-field label{font-size:10px;line-height:1.3}.settings-input-wrap{gap:4px}.settings-input-wrap input{width:100%;font-size:16px;padding:8px 6px}.settings-input-wrap span{font-size:9px;white-space:nowrap}
+      .settings-option{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:10px 9px}
+      .settings-option-copy strong{font-size:11px}.settings-option-copy p{font-size:9px;line-height:1.35;max-width:none}
+      .friendly-toggle{min-width:88px;width:88px;padding:10px 5px;font-size:10px;letter-spacing:0}
+      .settings-bottom{gap:8px;padding:11px 12px}.settings-bottom>span{max-width:43%;font-size:9px}
+      .settings-bottom button{justify-content:center;gap:6px;min-height:44px;padding:9px 10px;font-size:11px}
+    }
+    @media(max-width:360px){.settings-grid{grid-template-columns:1fr}.team-player-actions{min-width:88px}.score-player,.sub-player{width:39px;height:39px;min-height:39px;flex-basis:39px}}
   </style>
 </head>
 <body>
@@ -291,11 +311,11 @@
           <div class="settings-section-heading"><span class="settings-section-icon">✨</span><div><h3>Regras especiais</h3><p>Ative recursos para deixar os confrontos mais equilibrados.</p></div></div>
           <div class="settings-option">
             <div class="settings-option-copy"><strong>⚖️ FriendlyFut</strong><p>Distribui os principais artilheiros entre os times para evitar concentrações de gols em um único lado.</p></div>
-            <button id="settingFriendlyFut" class="friendly-toggle" type="button" aria-pressed="false">DESATIVADO</button>
+            <button id="settingFriendlyFut" class="friendly-toggle" type="button" aria-pressed="false">Desativado</button>
           </div>
           <div class="settings-option">
-            <div class="settings-option-copy"><strong>🥅 Pênaltis no primeiro jogo</strong><p>Se a primeira partida terminar empatada no tempo, abre uma disputa de pênaltis para decidir quem vence.</p></div>
-            <button id="settingPenaltiesFirstMatch" class="friendly-toggle" type="button" aria-pressed="false">DESATIVADO</button>
+            <div class="settings-option-copy"><strong>🥅 Pênaltis em caso de empate</strong><p>Quando o empate não for decidido por uma sequência de vitórias, os times disputam pênaltis.</p></div>
+            <button id="settingPenaltiesFirstMatch" class="friendly-toggle" type="button" aria-pressed="false">Desativado</button>
           </div>
         </section>
       </div>
@@ -308,9 +328,15 @@
     </div>
   </div>
 
+  <div id="goalConfirmModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="goalConfirmTitle">
+    <div class="modal-card goal-confirm-card"><div class="goal-confirm-icon">⚽</div><h2 id="goalConfirmTitle">Confirmar gol?</h2>
+      <p id="goalConfirmText" class="muted">Confirme o jogador e o time antes de atualizar o placar.</p>
+      <div class="row section"><button id="confirmGoalBtn" type="button">Confirmar gol</button><button id="cancelGoalBtn" class="secondary" type="button">Cancelar</button></div>
+    </div>
+  </div>
   <div id="firstMatchPenaltyModal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="firstMatchPenaltyTitle">
     <div class="modal-card first-penalty-card">
-      <div class="penalty-modal-heading"><span class="penalty-kicker">DECISÃO DA PRIMEIRA PARTIDA</span><h2 id="firstMatchPenaltyTitle">🥅 Disputa de pênaltis</h2><p>Empate no tempo regulamentar. A cobrança é alternada entre os times.</p></div>
+      <div class="penalty-modal-heading"><span class="penalty-kicker">DECISÃO DO EMPATE</span><h2 id="firstMatchPenaltyTitle">🥅 Disputa de pênaltis</h2><p>Empate no tempo regulamentar. A cobrança é alternada entre os times.</p></div>
       <div class="first-penalty-scoreboard">
         <div class="first-penalty-team first-penalty-team-a"><span>TIME A</span><strong id="firstPenaltyScoreA">0</strong><small id="firstPenaltyKicksA">0 cobranças</small></div>
         <div class="first-penalty-vs">×</div>
@@ -436,12 +462,14 @@ const $ = (id) => document.getElementById(id);
 const isConfigured = !SUPABASE_URL.includes("SEU-PROJETO") && !SUPABASE_ANON_KEY.includes("SUA_CHAVE");
 let supabaseClient = null, state = null, realtimeChannel = null, timerInterval = null, saveInProgress = false;
 let localTimerRunning = false, localTimerEnd = null;
+let pendingGoal = null;
 
 const emptyState = () => ({
   version: 0, sessionStartedAt: null, matchNumber: 0, firstMatch: true,
   players: [], teams: { A: [], B: [] }, score: { A: 0, B: 0 },
   streak: { A: 0, B: 0 }, match: { active: false, startedAt: null, remainingSeconds: 600, running: false },
-  config: { matchMinutes: 10, playersPerTeam: 7, goalsToWin: 2, consecutiveWinsToRotate: 3, friendlyFut: false, penaltiesFirstMatch: false },
+  config: { matchMinutes: 10, playersPerTeam: 7, goalsToWin: 2, consecutiveWinsToRotate: 3, friendlyFut: false, penaltiesOnDraw: false },
+  suddenDeath: false,
   penalties: null, history: [], currentMatchScorers: [], currentMatchParticipants: { A: [], B: [] }, lastUpdatedAt: null
 });
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2));
@@ -578,16 +606,18 @@ function render(){
   $("matchNumber").textContent=state.match.active?"Partida "+state.matchNumber:"Partida "+(state.matchNumber||"não iniciada");
   $("queueCount").textContent=sortQueue(state.players).length;
   $("playerCount").textContent=state.players.length+" jogadores";
-  $("startBtn").disabled=(state.match.active&&state.match.running)||!!state.penalties;
+  $("startBtn").disabled=(state.match.active&&(state.match.running||state.suddenDeath))||!!state.penalties;
   $("pauseBtn").disabled=!state.match.active || !state.match.running;
-  $("resetScoreBtn").disabled=!state.match.active;
-  $("finishBtn").disabled=!state.match.active;
+  $("resetScoreBtn").disabled=!state.match.active||!!state.suddenDeath;
+  $("finishBtn").disabled=!state.match.active||!!state.suddenDeath;
   const visibleRemaining=state.match.running&&state.match.startedAt?Math.max(0,state.match.remainingSeconds-Math.floor((Date.now()-new Date(state.match.startedAt).getTime())/1000)):state.match.remainingSeconds;
-  $("timer").textContent=formatTime(visibleRemaining);
+  $("timer").textContent=state.suddenDeath?"GOL DE OURO":formatTime(visibleRemaining);
   const config=gameConfig();
-  $("timerStatus").textContent=state.firstMatch&&state.matchNumber===1
-    ? `Primeira partida: ${config.matchMinutes} minutos completos, independentemente do placar.`
-    : `Partida: ${config.matchMinutes} minutos ou ${config.goalsToWin} gols.`;
+  $("timerStatus").textContent=state.suddenDeath
+    ? "MORTE SÚBITA · O primeiro gol encerra a partida."
+    : state.firstMatch&&state.matchNumber===1
+      ? `Primeira partida: ${config.matchMinutes} minutos completos, independentemente do placar.`
+      : `Partida: ${config.matchMinutes} minutos ou ${config.goalsToWin} gols.`;
   renderPlayers();renderQueue();renderHistory();renderPenalties();
 }
 function formatTime(sec){sec=Math.max(0,sec|0);return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");}
@@ -691,7 +721,7 @@ function renderHistory(){
 }
 function renderPenalties(){
   const p=state.penalties;
-  const firstMatchMode=p?.mode==="first-match";
+  const firstMatchMode=p?.mode==="first-match"||p?.mode==="draw";
   $("penaltyPanel").classList.toggle("hidden",!p||firstMatchMode);
   $("firstMatchPenaltyModal").classList.toggle("hidden",!firstMatchMode);
   if(!p)return;
@@ -724,7 +754,7 @@ function renderPenalties(){
 }
 async function firstMatchPenaltyKick(scored){
   if(!isAdmin())return notify("Somente o administrador pode registrar pênaltis.",true);
-  if(state.penalties?.mode!=="first-match"||state.penalties.finished)return;
+  if(!["first-match","draw"].includes(state.penalties?.mode)||state.penalties.finished)return;
   const p=structuredClone(state.penalties);
   const team=p.turn;
   const playerId=$("firstPenaltyScorer").value;
@@ -795,7 +825,8 @@ async function pauseTimer(){
   await mutate(s=>{s.match.remainingSeconds=remaining;s.match.running=false;s.match.startedAt=null;});
 }
 function gameConfig(sourceState=state){
-  return {...emptyState().config, ...(sourceState?.config||{})};
+  const stored=sourceState?.config||{};
+  return {...emptyState().config,...stored,penaltiesOnDraw:stored.penaltiesOnDraw??stored.penaltiesFirstMatch??false};
 }
 function playerGoalsInState(sourceState,playerId){
   let goals=0;
@@ -808,7 +839,7 @@ function setRuleToggle(id,enabled){
   const button=$(id);
   button.dataset.enabled=enabled?"true":"false";
   button.setAttribute("aria-pressed",enabled?"true":"false");
-  button.textContent=enabled?"ATIVADO":"DESATIVADO";
+  button.textContent=enabled?"Ativado":"Desativado";
   button.classList.toggle("is-enabled",enabled);
 }
 function showGameSettings(){
@@ -820,9 +851,9 @@ function showGameSettings(){
   $("settingConsecutiveWins").value=config.consecutiveWinsToRotate;
   $("settingFriendlyFut").dataset.enabled=config.friendlyFut?"true":"false";
   $("settingFriendlyFut").setAttribute("aria-pressed",config.friendlyFut?"true":"false");
-  $("settingFriendlyFut").textContent=`Botão FriendlyFut: ${config.friendlyFut?"ATIVADO":"DESATIVADO"}`;
+  $("settingFriendlyFut").textContent=config.friendlyFut?"Ativado":"Desativado";
   $("settingFriendlyFut").classList.toggle("is-enabled",!!config.friendlyFut);
-  setRuleToggle("settingPenaltiesFirstMatch",!!config.penaltiesFirstMatch);
+  setRuleToggle("settingPenaltiesFirstMatch",!!config.penaltiesOnDraw);
   $("settingsMessage").classList.add("hidden");
   $("gameSettingsModal").classList.remove("hidden");
 }
@@ -835,7 +866,7 @@ async function saveGameSettings(){
     goalsToWin:Number($("settingGoalsToWin").value),
     consecutiveWinsToRotate:Number($("settingConsecutiveWins").value),
     friendlyFut:$("settingFriendlyFut").dataset.enabled==="true",
-    penaltiesFirstMatch:$("settingPenaltiesFirstMatch").dataset.enabled==="true"
+    penaltiesOnDraw:$("settingPenaltiesFirstMatch").dataset.enabled==="true"
   };
   const rules=[
     ["matchMinutes",1,60,"O tempo por partida deve ficar entre 1 e 60 minutos."],
@@ -850,7 +881,10 @@ async function saveGameSettings(){
       return;
     }
   }
-  const saved=await mutate(s=>{s.config={...gameConfig(s),...values};});
+  const saved=await mutate(s=>{
+    s.config={...gameConfig(s),...values};
+    if(!s.match.running&&!s.suddenDeath&&!s.penalties)s.match.remainingSeconds=values.matchMinutes*60;
+  });
   if(saved){closeGameSettings();notify("Regras do jogo atualizadas e compartilhadas com todos.");}
 }
 function chooseInitialTeams(s){
@@ -1019,30 +1053,36 @@ function startNextMatch(s,winner,loser){
   s.currentMatchScorers=[];
   s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
   s.penalties=null;
+  s.suddenDeath=false;
 }
 async function finishMatch(reason="manual"){
   if(!isAdmin())return notify("Somente o administrador pode encerrar a partida.",true);
   if(!state.match.active)return;
   if(state.match.running)await pauseTimer();
   const a=state.score.A,b=state.score.B;
-  if(a===b && reason==="tempo" && state.firstMatch && state.matchNumber===1){
-    if(gameConfig().penaltiesFirstMatch){
-      const opened=await mutate(s=>{
-        s.match.active=false;s.match.running=false;s.match.startedAt=null;
-        s.penalties={mode:"first-match",scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1,scorers:[]};
-      });
-      if(opened)notify("Empate na primeira partida. Disputa de pênaltis iniciada.");
+  if(a===b){
+    const streakA=Number(state.streak.A)||0,streakB=Number(state.streak.B)||0;
+    const streakWinner=streakA>streakB?"A":streakB>streakA?"B":null;
+    if(streakWinner){
+      await resolveResult(streakWinner,"Empate no tempo: vitória para o time com maior sequência");
       return;
     }
-    await resolveFirstMatchDraw();
+    if(gameConfig().penaltiesOnDraw){
+      const opened=await mutate(s=>{
+        s.match.active=false;s.match.running=false;s.match.startedAt=null;s.suddenDeath=false;
+        s.penalties={mode:"draw",scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1,scorers:[]};
+      });
+      if(opened)notify("Empate sem vantagem de sequência. Disputa de pênaltis iniciada.");
+      return;
+    }
+    const opened=await mutate(s=>{
+      s.match.active=true;s.match.running=false;s.match.startedAt=null;
+      s.match.remainingSeconds=0;s.penalties=null;s.suddenDeath=true;
+    });
+    if(opened)notify("Empate sem sequência de vitórias. Começou a morte súbita: o próximo gol vence.");
     return;
   }
-  if(a===b){
-    const streakWinner=state.streak.A>state.streak.B?"A":state.streak.B>state.streak.A?"B":null;
-    if(!streakWinner){await mutate(s=>{s.match.active=false;s.penalties={scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1};});notify("Empate sem time com sequência de vitórias. Decisão por pênaltis.",true);return;}
-    await resolveResult(streakWinner,"Empate: permanece o time com sequência de vitórias.");return;
-  }
-  await resolveResult(a>b?"A":"B",reason==="tempo"?"Vitória por tempo":`Vitória por ${gameConfig().goalsToWin} gols`);
+  await resolveResult(a>b?"A":"B",reason==="morte-subita"?"Vitória na morte súbita":reason==="tempo"?"Vitória por tempo":`Vitória por ${gameConfig().goalsToWin} gols`);
 }
 async function resolveFirstMatchDraw(){
   try{
@@ -1082,9 +1122,9 @@ async function resolveResult(winner,result){
         result:result+" · "+teamName(winner),finishedAt:new Date().toISOString(),
         playersA:snapshot(participantsA),playersB:snapshot(participantsB),
         scorers:[...(s.currentMatchScorers||[])],
-        penaltyScoreA:s.penalties?.mode==="first-match"?s.penalties.scoreA:null,
-        penaltyScoreB:s.penalties?.mode==="first-match"?s.penalties.scoreB:null,
-        penaltyScorers:s.penalties?.mode==="first-match"?[...(s.penalties.scorers||[])]:[]
+        penaltyScoreA:["first-match","draw"].includes(s.penalties?.mode)?s.penalties.scoreA:null,
+        penaltyScoreB:["first-match","draw"].includes(s.penalties?.mode)?s.penalties.scoreB:null,
+        penaltyScorers:["first-match","draw"].includes(s.penalties?.mode)?[...(s.penalties.scorers||[])]:[]
       });
       // Todos os participantes, inclusive substituídos, contam como quem atuou.
       const participants=[...participantsA,...participantsB];
@@ -1115,6 +1155,15 @@ async function penaltyKick(team,scored){
   }
   await mutate(s=>{s.penalties=p;});
 }
+function requestGoalConfirmation(team,playerId){
+  if(!isAdmin()||!state.match.active)return;
+  const player=state.players.find(p=>p.id===playerId);
+  if(!player||!state.teams[team].includes(playerId))return notify("Jogador não pertence ao time selecionado.",true);
+  pendingGoal={team,playerId};
+  $("goalConfirmText").textContent=`Registrar gol de ${player.name} para o ${teamName(team)}?`;
+  $("goalConfirmModal").classList.remove("hidden");
+}
+function closeGoalConfirmation(){pendingGoal=null;$("goalConfirmModal").classList.add("hidden");}
 async function registerGoal(team,playerId=null){
   if(!isAdmin()||!state.match.active)return;
   const success=await mutate(s=>{
@@ -1123,6 +1172,7 @@ async function registerGoal(team,playerId=null){
     if(playerId){const player=s.players.find(p=>p.id===playerId);if(!player||!s.teams[team].includes(playerId))throw new Error("O jogador selecionado não pertence ao time que marcou.");s.currentMatchScorers.push({playerId,playerName:player.name,team,at:new Date().toISOString()});}
   });
   if(!success)return;
+  if(state.suddenDeath){await finishMatch("morte-subita");return;}
   if(!(state.firstMatch&&state.matchNumber===1) && state.score[team]>=gameConfig().goalsToWin)await finishMatch("gols");
 }
 
@@ -1268,10 +1318,12 @@ function bindEvents(){
   ["A","B"].forEach(team=>$("team"+team+"List").onclick=e=>{
     const goal=e.target.closest("button[data-score-player]");
     const sub=e.target.closest("button[data-sub-player]");
-    if(goal)registerGoal(team,goal.dataset.scorePlayer);
+    if(goal)requestGoalConfirmation(team,goal.dataset.scorePlayer);
     if(sub)openSubstitutionModal(team,sub.dataset.subPlayer);
   });
   $("cancelSubstitution").onclick=closeSubstitutionModal;
+  $("confirmGoalBtn").onclick=async()=>{const goal=pendingGoal;if(!goal)return;closeGoalConfirmation();await registerGoal(goal.team,goal.playerId);};
+  $("cancelGoalBtn").onclick=closeGoalConfirmation;
   $("substitutionQueue").onclick=e=>{const b=e.target.closest("button[data-substitute-id]");if(b)performSubstitution(b.dataset.substituteId);};
   $("playersList").onclick=e=>{const b=e.target.closest("button[data-action]");if(b)playerAction(b.dataset.action,b.dataset.id);};
   $("queueList").onclick=e=>{const b=e.target.closest("button[data-queue-move]");if(b)moveQueuePlayer(b.dataset.queueId,Number(b.dataset.queueMove));};
