@@ -981,29 +981,64 @@ function startNextMatch(s,winner,loser){
   const config=gameConfig(s);
   const findPlayer=id=>s.players.find(p=>p.id===id);
   const winnerIds=[...(s.teams[winner]||[])],loserIds=[...(s.teams[loser]||[])];
-
-  // Ao atingir o limite configurado, os dois times retornam à fila.
-  if(s.streak[winner]>=config.consecutiveWinsToRotate){
-    const departing=[...new Set([...winnerIds,...loserIds])].map(findPlayer).filter(Boolean);
-    appendPlayersToQueue(s,departing);
-    s.teams={A:[],B:[]};
-    s.players.forEach(p=>{p.team=null;});
-    s.streak={A:0,B:0};
-    s.matchNumber++;
-    s.firstMatch=false;
-    s.score={A:0,B:0};
-    s.match={active:false,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
-    s.currentMatchScorers=[];
-    s.currentMatchParticipants={A:[],B:[]};
-    s.penalties=null;
-    return;
-  }
-
-  const loserKeeperId=loserIds.find(id=>findPlayer(id)?.goalkeeper);
-  const losingFieldPlayers=loserIds.map(findPlayer).filter(p=>p&&!p.goalkeeper);
+  const teamSize=Math.max(2,Number(config.playersPerTeam)||2);
+  const fieldPerTeam=teamSize-1;
   const queued=sortQueue(s.players);
   const queuedKeepers=queued.filter(p=>p.goalkeeper);
   const queuedFieldPlayers=queued.filter(p=>!p.goalkeeper);
+
+  // O limite de vitórias só provoca a renovação simultânea quando há jogadores
+  // de linha suficientes para preencher os dois times. Os goleiros atuais são
+  // preservados em seus respectivos times e não entram nessa contagem.
+  const rotationThresholdReached=(Number(s.streak[winner])||0)>=config.consecutiveWinsToRotate;
+  const enoughPlayersForBothTeams=queuedFieldPlayers.length>=fieldPerTeam*2;
+  if(rotationThresholdReached&&enoughPlayersForBothTeams){
+    const keeperA=(s.teams.A||[]).find(id=>findPlayer(id)?.goalkeeper);
+    const keeperB=(s.teams.B||[]).find(id=>findPlayer(id)?.goalkeeper);
+    const incomingField=queuedFieldPlayers.slice(0,fieldPerTeam*2);
+    let nextA=incomingField.slice(0,fieldPerTeam);
+    let nextB=incomingField.slice(fieldPerTeam,fieldPerTeam*2);
+
+    if(config.friendlyFut){
+      const ranked=incomingField
+        .map((player,index)=>({player,index,goals:playerGoalsInState(s,player.id)}))
+        .sort((a,b)=>b.goals-a.goals||a.index-b.index);
+      nextA=[];nextB=[];
+      let goalsA=0,goalsB=0;
+      for(const entry of ranked){
+        if(nextA.length<fieldPerTeam&&(nextB.length>=fieldPerTeam||goalsA<=goalsB)){
+          nextA.push(entry.player);goalsA+=entry.goals;
+        }else{
+          nextB.push(entry.player);goalsB+=entry.goals;
+        }
+      }
+    }
+
+    const outgoingField=[...winnerIds,...loserIds]
+      .map(findPlayer).filter(p=>p&&!p.goalkeeper);
+    appendPlayersToQueue(s,outgoingField);
+    s.teams={
+      A:[...(keeperA?[keeperA]:[]),...nextA.map(p=>p.id)],
+      B:[...(keeperB?[keeperB]:[]),...nextB.map(p=>p.id)]
+    };
+    for(const p of s.players)p.team=null;
+    for(const id of s.teams.A){const p=findPlayer(id);if(p)p.team="A";}
+    for(const id of s.teams.B){const p=findPlayer(id);if(p)p.team="B";}
+    for(const p of incomingField){p.status="confirmado";p.confirmed=true;p.active=true;p.played=true;}
+    s.streak={A:0,B:0};
+    s.matchNumber++;s.firstMatch=false;s.score={A:0,B:0};
+    s.match={active:true,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
+    s.currentMatchScorers=[];
+    s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+    s.penalties=null;s.suddenDeath=false;
+    return;
+  }
+
+  // Sem dois times completos de jogadores de linha na fila, o vencedor
+  // permanece em campo mesmo que tenha alcançado o limite de vitórias.
+  // Nesse cenário, somente o time perdedor recebe as substituições disponíveis.
+  const loserKeeperId=loserIds.find(id=>findPlayer(id)?.goalkeeper);
+  const losingFieldPlayers=loserIds.map(findPlayer).filter(p=>p&&!p.goalkeeper);
   const outgoingField=chooseOutgoingByGames(s,losingFieldPlayers,Math.min(losingFieldPlayers.length,queuedFieldPlayers.length));
   let incomingField=queuedFieldPlayers.slice(0,outgoingField.length);
 
