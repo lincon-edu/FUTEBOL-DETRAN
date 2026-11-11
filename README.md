@@ -1,4 +1,4 @@
-# FUTEBOL-DETRAN — fila manual, rotação parcial e consulta pública
+# FUTEBOL-DETRAN — Gerenciador de pelada
 
 ## Alterações
 - Leitura pública do estado sem autenticação.
