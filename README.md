@@ -1,4 +1,4 @@
-# FUTEBOL-DETRAN — gerenciador de peladas
+# FUTEBOL-DETRAN — fila manual, rotação parcial e consulta pública
 
 ## Alterações
 - Leitura pública do estado sem autenticação.
@@ -52,3 +52,24 @@ As configurações são gravadas no mesmo estado JSONB já utilizado pela aplica
 A opção **Pênaltis no primeiro jogo** habilita a disputa somente quando a primeira partida termina empatada por tempo. A tela apresenta o placar dos pênaltis, a vez de cobrança e a seleção do jogador que converteu cada gol. Cobranças sem gol avançam a alternância sem atribuição de artilheiro. São três cobranças por equipe e, em caso de empate, segue a morte súbita. O histórico registra a decisão como **Vitória nos pênaltis**, com o placar e os autores dos gols nas cobranças.
 
 Quando a opção está desativada, um empate por tempo na primeira partida é registrado como empate e os dois times permanecem para a partida seguinte.
+
+
+## Melhorias recentes — experiência mobile e decisão de empate
+
+- A tela da partida em celulares apresenta os times em cartões verticais, com jogadores e controles de administração dimensionados para toque.
+- O botão de gol abre uma confirmação com nome do jogador e time. O placar só é alterado após a confirmação.
+- A regra de pênaltis foi generalizada para qualquer partida: em empate no tempo, uma sequência de vitórias maior decide o resultado; se as sequências forem iguais, a configuração de pênaltis define a disputa.
+- Se não houver vantagem de sequência e os pênaltis estiverem desativados, a partida entra em morte súbita (gol de ouro): o próximo gol encerra o jogo.
+- O FriendlyFut mostra apenas “Ativado” ou “Desativado”. Os parâmetros foram ajustados para telas estreitas.
+- Ao salvar uma nova duração, o cronômetro de uma próxima partida ainda não iniciada é atualizado imediatamente. Uma partida já iniciada, inclusive pausada, mantém o tempo corrente; a nova duração passa a valer na próxima partida.
+- A leitura da configuração antiga `penaltiesFirstMatch` é mantida como compatibilidade; a nova configuração é persistida em `penaltiesOnDraw`.
+
+
+## Regra adicional — renovação simultânea condicionada à fila
+
+- O limite de vitórias consecutivas continua definindo quando os dois times podem ser renovados simultaneamente.
+- Essa renovação só ocorre quando a fila contém jogadores de linha suficientes para preencher as duas equipes: `2 × (jogadores por time - 1)`.
+- Os goleiros que já estão em campo são preservados nas respectivas equipes e não entram na contagem de jogadores necessários na fila.
+- Exemplo com 7 jogadores por equipe: são necessários 12 jogadores de linha na fila (6 para cada time). Com apenas 11, o time vencedor permanece em campo, mesmo que tenha ultrapassado o limite de vitórias; o time perdedor recebe as substituições possíveis pela regra normal.
+- Quando a fila alcançar 12 jogadores de linha, a renovação simultânea poderá acontecer na conclusão da próxima vitória, preservando os dois goleiros atuais.
+- O FriendlyFut continua sendo aplicado à distribuição dos novos jogadores de linha entre as duas equipes.
