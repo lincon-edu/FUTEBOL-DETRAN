@@ -67,7 +67,7 @@
     .first-penalty-team span{font-size:10px;letter-spacing:1px;font-weight:900;color:#a5b9aa}
     .first-penalty-team strong{font-size:48px;line-height:1.15;font-weight:900;font-variant-numeric:tabular-nums}
     .first-penalty-team small{font-size:9px;color:#81998a;margin-top:4px}
-    .first-penalty-team-a strong{color:#a8edbb}.first-penalty-team-b strong{color:#b8d8ff}
+    .first-penalty-team-a strong{color:#8fc7ff}.first-penalty-team-b strong{color:#f2d77b}
     .first-penalty-vs{font-weight:900;color:#789080}
     .penalty-turn-card{display:flex;flex-direction:column;align-items:center;margin:14px 0;padding:11px;border-radius:12px;background:#1b3022;border:1px solid #365a42}
     .penalty-turn-label{font-size:8px;letter-spacing:1.4px;font-weight:900;color:#93b49e}
@@ -106,6 +106,7 @@
     .team-player-actions{display:flex;align-items:center;gap:5px;flex:0 0 auto}
     .score-player{width:36px;height:36px;min-height:36px;padding:0;border-radius:50%;font-size:19px;display:inline-grid;place-items:center;background:#245b3b;color:#fff;border:1px solid #3a9d62;flex:0 0 36px}
     .score-player:active{transform:scale(.94)}
+    .team.team-blue{border-color:#3979bd;box-shadow:inset 0 0 0 1px #24558a33}.team.team-blue h3{color:#8fc7ff!important}.team.team-yellow{border-color:#b69a3b;box-shadow:inset 0 0 0 1px #8c742633}.team.team-yellow h3{color:#f2d77b!important}
     .scoreboard{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center}.team{background:#0e1913;border:1px solid var(--line);border-radius:14px;padding:15px;text-align:center}.team h3{margin:0 0 5px;font-size:14px;color:var(--muted)}.score{font-size:48px;font-weight:850;line-height:1.1}.vs{font-weight:900;color:var(--muted)}.teamlist{font-size:12px;color:var(--muted);margin-top:9px;min-height:35px}.timer{font-size:38px;font-weight:850;letter-spacing:2px;text-align:center;margin:14px 0 2px}.status{text-align:center;color:var(--muted);font-size:12px}
     .statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:15px}.stat{background:#0d1912;border:1px solid var(--line);border-radius:11px;padding:11px}.stat b{display:block;font-size:20px}.stat span{font-size:11px;color:var(--muted)}
     .player-list{display:flex;flex-direction:column;gap:7px}.player{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:9px 10px;background:#0e1913;border:1px solid #26392f;border-radius:10px}.player .name{font-weight:650}.tag{display:inline-block;font-size:10px;padding:3px 7px;border-radius:20px;background:#254632;color:#a9f0c4;margin-left:5px}.tag.gold{background:#4b3c1c;color:#ffdf8a}.tag.gray{background:#28342d;color:#c3d0c8}.queue-num{font-size:12px;color:var(--muted);min-width:22px}
@@ -146,9 +147,9 @@
     .ranking-row:nth-child(even){background:#ffffff05}
     .ranking-row>span:nth-child(n+3),.ranking-row>b:nth-child(n+3){text-align:center;font-variant-numeric:tabular-nums}
     .ranking-player{font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-    .substitution-option{min-height:48px}
+    .substitution-option{min-height:48px}.match-keeper-btn{background:#35452b;color:#ffe6a1;border:1px solid #78633a;width:38px;height:38px;min-height:38px;min-width:38px;padding:0;font-size:17px;flex:0 0 38px}.match-keeper-btn.active{background:#725b20;color:#fff1bd;box-shadow:0 0 0 2px #d7b64a55}
     .queue-row{display:grid;grid-template-columns:34px minmax(0,1fr) auto;align-items:center;gap:9px;padding:9px 10px;background:#0e1913;border:1px solid #26392f;border-radius:10px}
-    .queue-position{font-size:13px;font-weight:800;color:var(--muted);text-align:center}
+    .queue-row.next-team-player{border-color:#d7b94d;background:linear-gradient(100deg,#3b3218,#17231a);box-shadow:inset 3px 0 0 #e3c34f}.queue-row.next-team-player .queue-position{color:#ffe28a}.next-team-badge{display:inline-flex;align-items:center;margin-left:6px;padding:2px 6px;border-radius:20px;background:#69551e;color:#ffe28a;font-size:9px;font-weight:900;letter-spacing:.3px;vertical-align:middle}.next-team-summary{margin:0 0 9px;padding:9px 10px;border:1px solid #69551e;border-radius:10px;background:#292515;color:#f2df9c;font-size:11px;line-height:1.45}.queue-row.next-team-blue{border-color:#3979bd;background:linear-gradient(100deg,#183452,#17231a);box-shadow:inset 3px 0 0 #65b8f2}.queue-row.next-team-blue .queue-position{color:#8fc7ff}.next-team-badge.blue{background:#214d78;color:#c9e7ff}.next-team-summary.dual{display:grid;gap:6px}.next-team-summary .next-summary-blue{color:#a9d8ff}.queue-position{font-size:13px;font-weight:800;color:var(--muted);text-align:center}
     .queue-player-main{min-width:0}
     .queue-player-name{font-weight:700;overflow-wrap:anywhere}
     .queue-player-games{font-size:11px;color:var(--muted);margin-top:2px}
@@ -191,6 +192,8 @@
     .podium-metric-icon{font-size:11px;line-height:1.2}
     .podium-metric strong{font-size:16px;line-height:1.1;font-variant-numeric:tabular-nums}
     .podium-metric small{font-size:7px;font-weight:850;letter-spacing:.35px;color:var(--muted)}
+    .goalkeeper-extra{margin-top:7px;padding-top:6px;border-top:1px solid #ffffff12;color:#d8c68d;font-size:9px;line-height:1.35}
+    .rank-extra{font-size:9px;color:#d8c68d;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .ranking-scroll{max-height:340px;overflow-y:auto;overscroll-behavior:contain;border:1px solid var(--line);border-radius:12px;background:#0e1913;scrollbar-width:thin;scrollbar-color:#42634f #142019}
     .ranking-list{display:flex;flex-direction:column}
     .rank-row{display:grid;grid-template-columns:27px minmax(0,1fr) 43px 43px 43px;gap:7px;align-items:center;padding:10px 9px;border-bottom:1px solid #26392f}
@@ -215,7 +218,7 @@
     .history-match-score strong{font-size:27px;line-height:1.1}
     .history-match-score span{color:var(--muted);font-weight:800}
     .history-match-result{text-align:center;font-size:10px;font-weight:900;letter-spacing:.5px;margin:2px 0 9px;color:#c9d8ce}
-    .result-a{color:#8de5ad}.result-b{color:#8fcaff}.result-draw{color:#f4d17a}
+    .result-a{color:#8fc7ff}.result-b{color:#f2d77b}.result-draw{color:#f4d17a}
     .history-match-teams{display:grid;grid-template-columns:1fr 1fr;gap:8px}
     .history-match-teams>div{min-width:0;padding:8px;background:#0c1711;border-radius:8px}
     .history-match-teams b{display:block;font-size:9px;color:var(--muted);margin-bottom:4px}
@@ -251,7 +254,7 @@
       .team{padding:12px 11px;text-align:left}.team h3{font-size:12px;margin-bottom:3px}.score{font-size:42px;text-align:center}
       .teamlist{margin-top:7px;min-height:0}.team-player{grid-template-columns:minmax(0,1fr) auto;gap:7px;padding:7px 2px;min-height:54px}
       .team-player-name{font-size:13px;line-height:1.25}.team-player-meta{font-size:10px;white-space:normal}
-      .team-player-actions{min-width:94px;gap:8px}.score-player,.sub-player{width:42px;height:42px;min-height:42px;flex-basis:42px;font-size:20px;border-radius:11px}
+      .team-player-actions{min-width:128px;gap:5px}.score-player,.sub-player{width:38px;height:38px;min-height:38px;flex-basis:38px;font-size:18px;border-radius:10px}
       .timer{font-size:clamp(42px,13vw,56px);margin:16px 0 2px}.statrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
       .row.section{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.row.section>button{width:100%;min-width:0;padding:10px 7px;font-size:12px}
       .settings-card{width:100%;max-height:96dvh}.settings-hero{padding:14px}.settings-content{padding:4px 12px 8px}
@@ -263,7 +266,7 @@
       .settings-bottom{gap:8px;padding:11px 12px}.settings-bottom>span{max-width:43%;font-size:9px}
       .settings-bottom button{justify-content:center;gap:6px;min-height:44px;padding:9px 10px;font-size:11px}
     }
-    @media(max-width:360px){.settings-grid{grid-template-columns:1fr}.team-player-actions{min-width:88px}.score-player,.sub-player{width:39px;height:39px;min-height:39px;flex-basis:39px}}
+    @media(max-width:360px){.settings-grid{grid-template-columns:1fr}.team-player-actions{min-width:116px;gap:4px}.score-player,.sub-player,.match-keeper-btn{width:36px;height:36px;min-height:36px;flex-basis:36px;min-width:36px}}
   </style>
 </head>
 <body>
@@ -338,13 +341,13 @@
     <div class="modal-card first-penalty-card">
       <div class="penalty-modal-heading"><span class="penalty-kicker">DECISÃO DO EMPATE</span><h2 id="firstMatchPenaltyTitle">🥅 Disputa de pênaltis</h2><p>Empate no tempo regulamentar. A cobrança é alternada entre os times.</p></div>
       <div class="first-penalty-scoreboard">
-        <div class="first-penalty-team first-penalty-team-a"><span>TIME A</span><strong id="firstPenaltyScoreA">0</strong><small id="firstPenaltyKicksA">0 cobranças</small></div>
+        <div class="first-penalty-team first-penalty-team-a"><span>TIME AZUL</span><strong id="firstPenaltyScoreA">0</strong><small id="firstPenaltyKicksA">0 cobranças</small></div>
         <div class="first-penalty-vs">×</div>
-        <div class="first-penalty-team first-penalty-team-b"><span>TIME B</span><strong id="firstPenaltyScoreB">0</strong><small id="firstPenaltyKicksB">0 cobranças</small></div>
+        <div class="first-penalty-team first-penalty-team-b"><span>TIME AMARELO</span><strong id="firstPenaltyScoreB">0</strong><small id="firstPenaltyKicksB">0 cobranças</small></div>
       </div>
       <div class="penalty-turn-card">
         <span class="penalty-turn-label">VEZ DE COBRAR</span>
-        <strong id="firstPenaltyTurn">TIME A</strong>
+        <strong id="firstPenaltyTurn">TIME AZUL</strong>
         <small id="firstPenaltyRound">Série inicial · 1ª cobrança de cada time</small>
       </div>
       <div id="firstPenaltyAdminControls" class="first-penalty-controls admin-only">
@@ -380,15 +383,15 @@
         <div class="panel">
           <div class="row between"><h2>Placar da partida</h2><span id="matchNumber" class="tag gray">Partida não iniciada</span></div>
           <div class="scoreboard">
-            <div class="team"><h3>TIME A</h3><div id="scoreA" class="score">0</div><div id="teamAList" class="teamlist">Aguardando formação</div></div>
+            <div class="team team-blue"><h3>TIME AZUL</h3><div id="scoreA" class="score">0</div><div id="teamAList" class="teamlist">Aguardando formação</div></div>
             <div class="vs">×</div>
-            <div class="team"><h3>TIME B</h3><div id="scoreB" class="score">0</div><div id="teamBList" class="teamlist">Aguardando formação</div></div>
+            <div class="team team-yellow"><h3>TIME AMARELO</h3><div id="scoreB" class="score">0</div><div id="teamBList" class="teamlist">Aguardando formação</div></div>
           </div>
           <div id="timer" class="timer">10:00</div><div id="timerStatus" class="status">A primeira partida terá 10 minutos obrigatórios.</div>
           <div class="statrow">
-            <div class="stat"><b id="winsA">0</b><span>Vitórias seguidas · A</span></div>
+            <div class="stat"><b id="winsA">0</b><span>Vitórias seguidas · Azul</span></div>
             <div class="stat"><b id="queueCount">0</b><span>Na fila</span></div>
-            <div class="stat"><b id="winsB">0</b><span>Vitórias seguidas · B</span></div>
+            <div class="stat"><b id="winsB">0</b><span>Vitórias seguidas · Amarelo</span></div>
           </div>
           <div class="row section">
             <button id="startBtn" class="admin-only">Iniciar jogo</button>
@@ -405,8 +408,8 @@
           <h2>Disputa de pênaltis</h2>
           <p class="muted">Cobranças alternadas: três jogadores por equipe. Persistindo o empate, inicia-se a cobrança alternada individual (morte súbita).</p>
           <div class="penalty">
-            <div class="penaltybox"><h3>TIME A · <span id="penA">0</span></h3><div id="penInfoA" class="muted">Cobranças: 0/3</div><button id="penGoalA" class="small admin-only">Gol A</button> <button id="penMissA" class="secondary small admin-only">Perdeu A</button></div>
-            <div class="penaltybox"><h3>TIME B · <span id="penB">0</span></h3><div id="penInfoB" class="muted">Cobranças: 0/3</div><button id="penGoalB" class="small admin-only">Gol B</button> <button id="penMissB" class="secondary small admin-only">Perdeu B</button></div>
+            <div class="penaltybox"><h3>TIME AZUL · <span id="penA">0</span></h3><div id="penInfoA" class="muted">Cobranças: 0/3</div><button id="penGoalA" class="small admin-only">Gol Azul</button> <button id="penMissA" class="secondary small admin-only">Perdeu Azul</button></div>
+            <div class="penaltybox"><h3>TIME AMARELO · <span id="penB">0</span></h3><div id="penInfoB" class="muted">Cobranças: 0/3</div><button id="penGoalB" class="small admin-only">Gol Amarelo</button> <button id="penMissB" class="secondary small admin-only">Perdeu Amarelo</button></div>
           </div>
           <div class="row section"><button id="cancelPenalty" class="secondary small admin-only">Cancelar disputa</button></div>
         </div>
@@ -438,7 +441,7 @@
 
       <section id="tab-historico" class="hidden">
         <div class="panel history-panel">
-          <div class="history-heading"><div><h2>🏆 Ranking dos jogadores</h2><p class="muted">Desempenho acumulado · gols, vitórias e partidas.</p></div><span class="ranking-live">RANKING</span></div>
+          <div class="history-heading"><div><h2>🏆 Ranking dos jogadores</h2><p class="muted">Participações na linha e no gol contabilizadas separadamente.</p></div><span class="ranking-live">RANKING</span></div>
           <div id="rankingList"><div class="empty">Ainda não há jogadores para o ranking.</div></div>
           <div class="section match-history-section">
             <div class="history-heading"><div><h2>📋 Histórico de partidas</h2><p class="muted">Resultados e escalações das partidas encerradas.</p></div></div>
@@ -466,7 +469,7 @@ let pendingGoal = null;
 
 const emptyState = () => ({
   version: 0, sessionStartedAt: null, matchNumber: 0, firstMatch: true,
-  players: [], teams: { A: [], B: [] }, score: { A: 0, B: 0 },
+  players: [], teams: { A: [], B: [] }, matchGoalkeepers: { A: null, B: null }, score: { A: 0, B: 0 },
   streak: { A: 0, B: 0 }, match: { active: false, startedAt: null, remainingSeconds: 600, running: false },
   config: { matchMinutes: 10, playersPerTeam: 7, goalsToWin: 2, consecutiveWinsToRotate: 3, friendlyFut: false, penaltiesOnDraw: false },
   suddenDeath: false,
@@ -534,11 +537,15 @@ async function loadState(){
   // Leitura pública: não depende de autenticação administrativa.
   const {data,error}=await supabaseClient.from("futebol_estado").select("estado,versao").eq("id",1).single();
   if(error) throw error;
-  state = {...emptyState(), ...(data.estado || {}), version:data.versao};
+  const persistedState=data.estado||{};
+  state = {...emptyState(), ...persistedState, version:data.versao};
+  if(!Object.prototype.hasOwnProperty.call(persistedState,"matchGoalkeepers"))resetMatchGoalkeepers(state);
   state.config = {...emptyState().config, ...(state.config || {})};
   if(!Array.isArray(state.history))state.history=[];
   if(!Array.isArray(state.currentMatchScorers))state.currentMatchScorers=[];
   if(!state.currentMatchParticipants)state.currentMatchParticipants={A:[...(state.teams?.A||[])],B:[...(state.teams?.B||[])]};
+  if(!state.matchGoalkeepers)resetMatchGoalkeepers(state);
+  for(const side of ["A","B"])if(state.matchGoalkeepers[side]&&!state.teams[side]?.includes(state.matchGoalkeepers[side]))state.matchGoalkeepers[side]=null;
   state.players=(state.players||[]).map(p=>({...p,active:p.active!==false,status:p.status||(p.active===false?"ausente":p.confirmed?"confirmado":"pendente")}));
   // Compatibilidade com filas criadas antes do campo queueOrder.
   const legacyQueue=state.players.filter(p=>p.confirmed&&!p.team&&playerStatus(p)==="confirmado")
@@ -577,8 +584,22 @@ async function mutate(fn){
 }
 function playerById(id){return state.players.find(p=>p.id===id);}
 function teamPlayers(team){return (state.teams[team]||[]).map(playerById).filter(Boolean);}
-function teamName(team){return team==="A"?"Time A":"Time B";}
-function teamText(team){return teamPlayers(team).map(p=>p.name+(p.goalkeeper?" (G)":"")).join(" · ")||"Aguardando formação";}
+function matchGoalkeeperId(team, source=state){
+  if(source?.matchGoalkeepers && Object.prototype.hasOwnProperty.call(source.matchGoalkeepers,team)){
+    const configured=source.matchGoalkeepers[team];
+    return configured && (source.teams?.[team]||[]).includes(configured) ? configured : null;
+  }
+  const permanent=(source.teams?.[team]||[]).find(id=>source.players?.find(p=>p.id===id)?.goalkeeper);
+  return permanent||null;
+}
+function isMatchGoalkeeper(playerId,team,source=state){return matchGoalkeeperId(team,source)===playerId;}
+function resetMatchGoalkeepers(source){
+  source.matchGoalkeepers={A:null,B:null};
+  for(const team of ["A","B"])source.matchGoalkeepers[team]=(source.teams?.[team]||[]).find(id=>source.players?.find(p=>p.id===id)?.goalkeeper)||null;
+}
+function clearMatchGoalkeepers(source){source.matchGoalkeepers={A:null,B:null};}
+function teamName(team){return team==="A"?"Time Azul":"Time Amarelo";}
+function teamText(team){return teamPlayers(team).map(p=>p.name+(isMatchGoalkeeper(p.id,team)?" (G)":"")).join(" · ")||"Aguardando formação";}
 function renderTeamPlayers(team){
   const container=$("team"+team+"List");
   const players=teamPlayers(team);
@@ -591,10 +612,10 @@ function renderTeamPlayers(team){
     const displayedGoals=stats.goals+currentGoals;
     return `<div class="team-player">
       <span class="team-player-info">
-        <span class="team-player-name">${escapeHtml(p.name)}${p.goalkeeper?' <b class="tag gold">G</b>':''}</span>
+        <span class="team-player-name">${escapeHtml(p.name)}${isMatchGoalkeeper(p.id,team)?' <b class="tag gold">G</b>':''}</span>
         <small class="team-player-meta">⚽ ${displayedGoals} gols <span>·</span> 🎮 ${displayedGames} jogos</small>
       </span>
-      <span class="team-player-actions">${isAdmin()&&state.match.active?`<button type="button" class="score-player" data-score-team="${team}" data-score-player="${p.id}" aria-label="Registrar gol de ${escapeHtml(p.name)}" title="Registrar gol">⚽</button><button type="button" class="sub-player" data-sub-team="${team}" data-sub-player="${p.id}" aria-label="Substituir ${escapeHtml(p.name)}" title="Substituir jogador">🔄</button>`:""}</span>
+      <span class="team-player-actions">${isAdmin()&&state.match.active?`<button type="button" class="score-player" data-score-team="${team}" data-score-player="${p.id}" aria-label="Registrar gol de ${escapeHtml(p.name)}" title="Registrar gol">⚽</button><button type="button" class="sub-player" data-sub-team="${team}" data-sub-player="${p.id}" aria-label="Substituir ${escapeHtml(p.name)}" title="Substituir jogador">🔄</button><button type="button" class="match-keeper-btn ${isMatchGoalkeeper(p.id,team)?'active':''}" data-match-keeper-team="${team}" data-match-keeper-player="${p.id}" aria-label="Definir ${escapeHtml(p.name)} como goleiro desta partida" title="Definir goleiro desta partida">🧤</button>`:""}</span>
     </div>`;
   }).join("");
 }
@@ -622,13 +643,22 @@ function render(){
 }
 function formatTime(sec){sec=Math.max(0,sec|0);return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");}
 function calculatePlayerStats(playerId){
-  const stats={games:0,wins:0,losses:0,goals:0};
+  const stats={games:0,lineGames:0,goalkeeperGames:0,wins:0,losses:0,goals:0,goalsConceded:0,cleanSheets:0};
   for(const match of (state.history||[])){
     const a=match.playersA||[], b=match.playersB||[];
-    const inA=a.some(p=>(typeof p==="string"?p:p.id)===playerId);
-    const inB=b.some(p=>(typeof p==="string"?p:p.id)===playerId);
+    const entryA=a.find(p=>(typeof p==="string"?p:p.id)===playerId);
+    const entryB=b.find(p=>(typeof p==="string"?p:p.id)===playerId);
+    const inA=!!entryA,inB=!!entryB;
     if(inA||inB){
       stats.games++;
+      const entry=inA?entryA:entryB;
+      const wasGoalkeeper=typeof entry==="object"&&entry.goalkeeper===true;
+      if(wasGoalkeeper){
+        stats.goalkeeperGames++;
+        const conceded=inA?Number(match.scoreB)||0:Number(match.scoreA)||0;
+        stats.goalsConceded+=conceded;
+        if(conceded===0)stats.cleanSheets++;
+      }else stats.lineGames++;
       if(match.winnerTeam==="A"&&inA || match.winnerTeam==="B"&&inB)stats.wins++;
       else if(match.winnerTeam==="A"&&inB || match.winnerTeam==="B"&&inA)stats.losses++;
     }
@@ -643,19 +673,51 @@ function renderPlayers(){
   const ordered=[...state.players].sort((a,b)=>a.name.localeCompare(b.name,"pt-BR"));
   list.innerHTML=ordered.map(p=>{
     const status=playerStatus(p);
-    return `<div class="player roster-row"><div class="roster-status">${isAdmin()?`<button type="button" class="status-btn status-${status}" data-action="cycle-status" data-id="${p.id}" title="Alterar presença: ? pendente, V chegou, X ausente">${attendanceIcon(status)}</button>`:`<span class="status-view status-${status}">${attendanceIcon(status)}</span>`}</div><div class="roster-name"><span class="name ${status==='ausente'?'name-absent':''}">${escapeHtml(p.name)}</span>${p.goalkeeper?'<span class="tag gold">G</span>':''}${p.team?`<span class="tag gray">Time ${p.team}</span>`:''}</div>${isAdmin()?`<div class="roster-actions"><button type="button" class="keeper-toggle ${p.goalkeeper?'keeper-active':''}" data-action="toggle-goalkeeper" data-id="${p.id}" title="${p.goalkeeper?'Remover posição de goleiro':'Definir como goleiro'}" aria-label="${p.goalkeeper?'Remover posição de goleiro':'Definir como goleiro'}">🧤</button><button type="button" class="delete-player" data-action="delete" data-id="${p.id}" title="Excluir jogador e todo o seu histórico">🗑️</button></div>`:''}</div>`;
+    return `<div class="player roster-row"><div class="roster-status">${isAdmin()?`<button type="button" class="status-btn status-${status}" data-action="cycle-status" data-id="${p.id}" title="Alterar presença: ? pendente, V chegou, X ausente">${attendanceIcon(status)}</button>`:`<span class="status-view status-${status}">${attendanceIcon(status)}</span>`}</div><div class="roster-name"><span class="name ${status==='ausente'?'name-absent':''}">${escapeHtml(p.name)}</span>${p.goalkeeper?'<span class="tag gold">G</span>':''}${p.team?`<span class="tag gray">${teamName(p.team)}</span>`:''}</div>${isAdmin()?`<div class="roster-actions"><button type="button" class="keeper-toggle ${p.goalkeeper?'keeper-active':''}" data-action="toggle-goalkeeper" data-id="${p.id}" title="${p.goalkeeper?'Remover posição de goleiro':'Definir como goleiro'}" aria-label="${p.goalkeeper?'Remover posição de goleiro':'Definir como goleiro'}">🧤</button><button type="button" class="delete-player" data-action="delete" data-id="${p.id}" title="Excluir jogador e todo o seu histórico">🗑️</button></div>`:''}</div>`;
   }).join("");
   $("playerCount").textContent=state.players.length+" jogadores";
 }
 function renderQueue(){
   const q=sortQueue(state.players),list=$("queueList");
   if(!q.length){list.innerHTML='<div class="empty">Fila vazia.</div>';return;}
-  list.innerHTML=q.map((p,i)=>{
+  const requiredField=Math.max(1,(Number(gameConfig().playersPerTeam)||2)-1);
+  const queuedKeepers=q.filter(p=>p.goalkeeper);
+  const queuedFieldPlayers=q.filter(p=>!p.goalkeeper);
+  const firstKeeper=queuedKeepers[0]||null;
+  const firstFields=queuedFieldPlayers.slice(0,requiredField);
+  const firstTeamIds=new Set([...firstFields.map(p=>p.id),...(firstKeeper?[firstKeeper.id]:[])]);
+
+  // A segunda equipe só é pré-marcada quando a partida atual pode atingir
+  // o limite de vitórias consecutivas e há jogadores de linha para dois times.
+  const threshold=Math.max(1,Number(gameConfig().consecutiveWinsToRotate)||1);
+  const streakA=Number(state.streak?.A)||0,streakB=Number(state.streak?.B)||0;
+  const possibleDoubleExit=!!state.match?.active&&Math.max(streakA,streakB)>=threshold-1;
+  const enoughForTwoTeams=queuedFieldPlayers.length>=requiredField*2;
+  const showSecondTeam=possibleDoubleExit&&enoughForTwoTeams;
+  const secondFields=showSecondTeam?queuedFieldPlayers.slice(requiredField,requiredField*2):[];
+  const secondKeeper=showSecondTeam?(queuedKeepers[1]||null):null;
+  const secondTeamIds=new Set([...secondFields.map(p=>p.id),...(secondKeeper?[secondKeeper.id]:[])]);
+
+  const firstSummary=firstKeeper
+    ? `🟨 PRÓXIMO TIME 1: ${firstFields.length}/${requiredField} jogadores de linha + goleiro disponível.`
+    : `🟨 PRÓXIMO TIME 1: ${firstFields.length}/${requiredField} jogadores de linha. O goleiro atual será mantido.`;
+  const secondSummary=secondKeeper
+    ? `🟦 PRÓXIMO TIME 2: ${secondFields.length}/${requiredField} jogadores de linha + goleiro disponível.`
+    : `🟦 PRÓXIMO TIME 2: ${secondFields.length}/${requiredField} jogadores de linha. O outro goleiro atual será mantido.`;
+  const summary=showSecondTeam
+    ? `<div class="next-team-summary dual"><div>${firstSummary}</div><div class="next-summary-blue">${secondSummary}</div></div>`
+    : `<div class="next-team-summary">${firstSummary}${possibleDoubleExit&&!enoughForTwoTeams?` A segunda equipe ainda precisa de ${Math.max(0,requiredField*2-queuedFieldPlayers.length)} jogador(es) de linha para ser formada.`:""}</div>`;
+
+  list.innerHTML=summary+q.map((p,i)=>{
     const activeNow=state.match?.active&&(state.currentMatchParticipants?.A||[]).concat(state.currentMatchParticipants?.B||[]).includes(p.id);
-    const games=playerGamesInState(state,p.id)+(activeNow?1:0);
-    return `<div class="queue-row">
+    const stats=calculatePlayerStats(p.id);
+    const games=stats.games+(activeNow?1:0);
+    const teamNumber=firstTeamIds.has(p.id)?1:secondTeamIds.has(p.id)?2:0;
+    const teamClass=teamNumber===1?'next-team-player':teamNumber===2?'next-team-blue':'';
+    const badge=teamNumber===1?'<span class="next-team-badge">PRÓXIMO TIME 1</span>':teamNumber===2?'<span class="next-team-badge blue">PRÓXIMO TIME 2</span>':'';
+    return `<div class="queue-row ${teamClass}">
       <div class="queue-position">${i+1}º</div>
-      <div class="queue-player-main"><div class="queue-player-name">${escapeHtml(p.name)}${p.goalkeeper?'<span class="tag gold">G</span>':''}</div><div class="queue-player-games">${games} ${games===1?"partida":"partidas"}</div></div>
+      <div class="queue-player-main"><div class="queue-player-name">${escapeHtml(p.name)}${p.goalkeeper?'<span class="tag gold">G</span>':''}${badge}</div><div class="queue-player-games">${stats.lineGames+(activeNow&&!isMatchGoalkeeper(p.id,"A")&&!isMatchGoalkeeper(p.id,"B")?1:0)} linha · ${stats.goalkeeperGames+(activeNow&&(isMatchGoalkeeper(p.id,"A")||isMatchGoalkeeper(p.id,"B"))?1:0)} no gol · ${games} total</div></div>
       ${isAdmin()?`<div class="queue-actions"><button type="button" class="queue-move" data-queue-move="-1" data-queue-id="${p.id}" aria-label="Subir ${escapeHtml(p.name)}" title="Subir" ${i===0?"disabled":""}>▲</button><button type="button" class="queue-move" data-queue-move="1" data-queue-id="${p.id}" aria-label="Descer ${escapeHtml(p.name)}" title="Descer" ${i===q.length-1?"disabled":""}>▼</button></div>`:""}
     </div>`;
   }).join("");
@@ -678,9 +740,10 @@ function renderHistory(){
         <div class="podium-wins"><strong>${r.wins}</strong><span>VITÓRIAS</span></div>
         <div class="podium-metrics">
           <div class="podium-metric"><span class="podium-metric-icon">⚽</span><strong>${r.goals}</strong><small>GOLS</small></div>
-          <div class="podium-metric"><span class="podium-metric-icon">🎮</span><strong>${r.games}</strong><small>JOGOS</small></div>
-          <div class="podium-metric"><span class="podium-metric-icon">✕</span><strong>${r.losses}</strong><small>DERROTAS</small></div>
+          <div class="podium-metric"><span class="podium-metric-icon">👟</span><strong>${r.lineGames}</strong><small>LINHA</small></div>
+          <div class="podium-metric"><span class="podium-metric-icon">🧤</span><strong>${r.goalkeeperGames}</strong><small>GOL</small></div>
         </div>
+        <div class="goalkeeper-extra">🧤 ${r.goalsConceded} gols sofridos · ${r.cleanSheets} jogos sem sofrer gols</div>
       </div>`).join("");
     const list=rows.slice(3).map((r,index)=>`
       <div class="rank-row">
@@ -688,10 +751,11 @@ function renderHistory(){
         <div class="rank-main">
           <div class="rank-name">${escapeHtml(r.player.name)}</div>
           <div class="rank-goal-track"><span style="width:${Math.round((r.goals/maxGoals)*100)}%"></span></div>
+          <div class="rank-extra">🧤 ${r.goalsConceded} sofridos · ${r.cleanSheets} sem sofrer</div>
         </div>
         <div class="rank-stat rank-goals"><strong>${r.goals}</strong><small>GOLS</small></div>
-        <div class="rank-stat"><strong>${r.games}</strong><small>JOGOS</small></div>
-        <div class="rank-stat"><strong>${r.wins}</strong><small>VIT.</small></div>
+        <div class="rank-stat"><strong>${r.lineGames}</strong><small>LINHA</small></div>
+        <div class="rank-stat"><strong>${r.goalkeeperGames}</strong><small>GOL</small></div>
       </div>`).join("");
     const scrollRanking=list
       ? `<div class="ranking-scroll" tabindex="0" aria-label="Ranking a partir do quarto lugar"><div class="ranking-list">${list}</div></div>`
@@ -703,17 +767,18 @@ function renderHistory(){
     return;
   }
   matches.innerHTML=`<div class="match-history-scroll" tabindex="0" aria-label="Histórico de partidas">`+[...state.history].reverse().map(h=>{
-    const scorers=(h.scorers||[]).map(g=>escapeHtml(g.playerName||"Jogador")+(g.team?` (Time ${g.team})`:"")).join(", ")||"Sem gols identificados";
-    const penaltyScorers=(h.penaltyScorers||[]).map(g=>escapeHtml(g.playerName||"Jogador")+(g.team?` (Time ${g.team})`:"")).join(", ");
+    const scorers=(h.scorers||[]).map(g=>escapeHtml(g.playerName||"Jogador")+(g.team?` (${teamName(g.team)})`:"")).join(", ")||"Sem gols identificados";
+    const penaltyScorers=(h.penaltyScorers||[]).map(g=>escapeHtml(g.playerName||"Jogador")+(g.team?` (${teamName(g.team)})`:"")).join(", ");
     const penaltySummary=Number.isInteger(h.penaltyScoreA)&&Number.isInteger(h.penaltyScoreB)
       ? `<div class="history-match-penalties">🥅 Pênaltis: ${h.penaltyScoreA} × ${h.penaltyScoreB}${penaltyScorers?` · Gols: ${penaltyScorers}`:""}</div>`:"";
     const names=arr=>(arr||[]).map(p=>escapeHtml(typeof p==="string"?(playerById(p)?.name||"Jogador removido"):p.name)).join(", ");
-    const resultClass=String(h.result||"").toLowerCase().includes("time a")?"result-a":String(h.result||"").toLowerCase().includes("time b")?"result-b":"result-draw";
+    const displayResult=String(h.result||"").replace(/Time A/g,"Time Azul").replace(/Time B/g,"Time Amarelo");
+    const resultClass=displayResult.toLowerCase().includes("time azul")?"result-a":displayResult.toLowerCase().includes("time amarelo")?"result-b":"result-draw";
     return `<article class="history-match-card">
       <div class="history-match-top"><span class="history-match-number">PARTIDA ${h.number}</span><span class="history-match-date">${new Date(h.finishedAt).toLocaleString("pt-BR")}</span></div>
       <div class="history-match-score"><strong>${h.scoreA}</strong><span>×</span><strong>${h.scoreB}</strong></div>
-      <div class="history-match-result ${resultClass}">${escapeHtml(h.result)}</div>
-      <div class="history-match-teams"><div><b>TIME A</b><span>${names(h.playersA)||"—"}</span></div><div><b>TIME B</b><span>${names(h.playersB)||"—"}</span></div></div>
+      <div class="history-match-result ${resultClass}">${escapeHtml(displayResult)}</div>
+      <div class="history-match-teams"><div><b>TIME AZUL</b><span>${names(h.playersA)||"—"}</span></div><div><b>TIME AMARELO</b><span>${names(h.playersB)||"—"}</span></div></div>
       <div class="history-match-scorers">⚽ ${scorers}</div>
       ${penaltySummary}
     </article>`;
@@ -918,6 +983,7 @@ function chooseInitialTeams(s){
     b.push(...randomized.slice(fieldPerTeam,fieldPerTeam*2));
   }
   s.teams={A:a.map(p=>p.id),B:b.map(p=>p.id)};
+  s.matchGoalkeepers={A:a.find(p=>p.goalkeeper)?.id||null,B:b.find(p=>p.goalkeeper)?.id||null};
   s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
   s.players.forEach(p=>{p.team=null;if(a.includes(p)||b.includes(p)){p.team=a.includes(p)?"A":"B";p.confirmed=true;}});
   s.currentMatchScorers=[];
@@ -993,8 +1059,8 @@ function startNextMatch(s,winner,loser){
   const rotationThresholdReached=(Number(s.streak[winner])||0)>=config.consecutiveWinsToRotate;
   const enoughPlayersForBothTeams=queuedFieldPlayers.length>=fieldPerTeam*2;
   if(rotationThresholdReached&&enoughPlayersForBothTeams){
-    const keeperA=(s.teams.A||[]).find(id=>findPlayer(id)?.goalkeeper);
-    const keeperB=(s.teams.B||[]).find(id=>findPlayer(id)?.goalkeeper);
+    const keeperA=matchGoalkeeperId("A",s);
+    const keeperB=matchGoalkeeperId("B",s);
     const incomingField=queuedFieldPlayers.slice(0,fieldPerTeam*2);
     let nextA=incomingField.slice(0,fieldPerTeam);
     let nextB=incomingField.slice(fieldPerTeam,fieldPerTeam*2);
@@ -1014,8 +1080,9 @@ function startNextMatch(s,winner,loser){
       }
     }
 
+    const currentKeeperIds=new Set([keeperA,keeperB].filter(Boolean));
     const outgoingField=[...winnerIds,...loserIds]
-      .map(findPlayer).filter(p=>p&&!p.goalkeeper);
+      .filter(id=>!currentKeeperIds.has(id)).map(findPlayer).filter(Boolean);
     appendPlayersToQueue(s,outgoingField);
     s.teams={
       A:[...(keeperA?[keeperA]:[]),...nextA.map(p=>p.id)],
@@ -1030,6 +1097,7 @@ function startNextMatch(s,winner,loser){
     s.match={active:true,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
     s.currentMatchScorers=[];
     s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+    clearMatchGoalkeepers(s);
     s.penalties=null;s.suddenDeath=false;
     return;
   }
@@ -1037,8 +1105,8 @@ function startNextMatch(s,winner,loser){
   // Sem dois times completos de jogadores de linha na fila, o vencedor
   // permanece em campo mesmo que tenha alcançado o limite de vitórias.
   // Nesse cenário, somente o time perdedor recebe as substituições disponíveis.
-  const loserKeeperId=loserIds.find(id=>findPlayer(id)?.goalkeeper);
-  const losingFieldPlayers=loserIds.map(findPlayer).filter(p=>p&&!p.goalkeeper);
+  const loserKeeperId=matchGoalkeeperId(loser,s);
+  const losingFieldPlayers=loserIds.filter(id=>id!==loserKeeperId).map(findPlayer).filter(Boolean);
   const outgoingField=chooseOutgoingByGames(s,losingFieldPlayers,Math.min(losingFieldPlayers.length,queuedFieldPlayers.length));
   let incomingField=queuedFieldPlayers.slice(0,outgoingField.length);
 
@@ -1087,6 +1155,7 @@ function startNextMatch(s,winner,loser){
   s.match={active:true,startedAt:null,remainingSeconds:config.matchMinutes*60,running:false};
   s.currentMatchScorers=[];
   s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+  clearMatchGoalkeepers(s);
   s.penalties=null;
   s.suddenDeath=false;
 }
@@ -1096,18 +1165,19 @@ async function finishMatch(reason="manual"){
   if(state.match.running)await pauseTimer();
   const a=state.score.A,b=state.score.B;
   if(a===b){
+    const isFirstMatch=!!(state.firstMatch&&state.matchNumber===1);
     const streakA=Number(state.streak.A)||0,streakB=Number(state.streak.B)||0;
     const streakWinner=streakA>streakB?"A":streakB>streakA?"B":null;
-    if(streakWinner){
+    if(!isFirstMatch&&streakWinner){
       await resolveResult(streakWinner,"Empate no tempo: vitória para o time com maior sequência");
       return;
     }
-    if(gameConfig().penaltiesOnDraw){
+    if(isFirstMatch||gameConfig().penaltiesOnDraw){
       const opened=await mutate(s=>{
         s.match.active=false;s.match.running=false;s.match.startedAt=null;s.suddenDeath=false;
-        s.penalties={mode:"draw",scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1,scorers:[]};
+        s.penalties={mode:isFirstMatch?"first-match":"draw",scoreA:0,scoreB:0,kicksA:0,kicksB:0,turn:"A",finished:false,round:1,scorers:[]};
       });
-      if(opened)notify("Empate sem vantagem de sequência. Disputa de pênaltis iniciada.");
+      if(opened)notify(isFirstMatch?"Empate na primeira partida. Disputa de pênaltis iniciada.":"Empate sem vantagem de sequência. Disputa de pênaltis iniciada.");
       return;
     }
     const opened=await mutate(s=>{
@@ -1124,7 +1194,7 @@ async function resolveFirstMatchDraw(){
     await mutate(s=>{
       const snapshot=ids=>(ids||[]).map(id=>{
         const p=s.players.find(x=>x.id===id);
-        return p?{id:p.id,name:p.name,goalkeeper:!!p.goalkeeper}:{id,name:"Jogador removido"};
+        return p?{id:p.id,name:p.name,goalkeeper:isMatchGoalkeeper(p.id,"A",s)||isMatchGoalkeeper(p.id,"B",s)}:{id,name:"Jogador removido"};
       });
       const participantsA=[...new Set([...(s.currentMatchParticipants?.A||[]),...s.teams.A])];
       const participantsB=[...new Set([...(s.currentMatchParticipants?.B||[]),...s.teams.B])];
@@ -1140,6 +1210,7 @@ async function resolveFirstMatchDraw(){
       s.match={active:true,startedAt:null,remainingSeconds:gameConfig(s).matchMinutes*60,running:false};
       s.currentMatchScorers=[];
       s.currentMatchParticipants={A:[...s.teams.A],B:[...s.teams.B]};
+      clearMatchGoalkeepers(s);
       s.penalties=null;
     });
     notify("A primeira partida terminou empatada. Os dois times permanecem para a próxima partida.");
@@ -1149,7 +1220,7 @@ async function resolveResult(winner,result){
   const loser=winner==="A"?"B":"A";
   try{
     await mutate(s=>{
-      const snapshot=(ids)=>(ids||[]).map(id=>{const p=s.players.find(x=>x.id===id);return p?{id:p.id,name:p.name,goalkeeper:!!p.goalkeeper}: {id,name:"Jogador removido"};});
+      const snapshot=(ids)=>(ids||[]).map(id=>{const p=s.players.find(x=>x.id===id);return p?{id:p.id,name:p.name,goalkeeper:isMatchGoalkeeper(p.id,"A",s)||isMatchGoalkeeper(p.id,"B",s)}: {id,name:"Jogador removido"};});
       const participantsA=[...new Set([...(s.currentMatchParticipants?.A||[]),...s.teams.A])];
       const participantsB=[...new Set([...(s.currentMatchParticipants?.B||[]),...s.teams.B])];
       s.history.push({
@@ -1167,7 +1238,7 @@ async function resolveResult(winner,result){
       s.streak[winner]++;s.streak[loser]=0;s.match.active=false;s.match.running=false;
       startNextMatch(s,winner,loser);
     });
-    if(state.teams.A.length&&state.teams.B.length)notify(`${teamName(winner)} permanece. Próxima partida preparada.`);
+    if(state.teams.A.length&&state.teams.B.length)notify(`${teamName(winner)} permanece. Próxima partida preparada. Defina o goleiro de cada time pelo botão 🧤 antes de iniciar.`);
     else notify("Limite de vitórias atingido: os dois times saíram. Inicie uma nova formação com os jogadores confirmados na fila.");
   }catch(e){notify("Resultado registrado, mas não foi possível montar a próxima partida: "+e.message,true);}
 }
@@ -1269,28 +1340,90 @@ let substitutionTarget=null;
 function openSubstitutionModal(team,outgoingId){
   if(!isAdmin()||!state.match.active)return;
   const outgoing=playerById(outgoingId);if(!outgoing)return;
-  const eligible=sortQueue(state.players).filter(p=>!!p.goalkeeper===!!outgoing.goalkeeper);
-  substitutionTarget={team,outgoingId};
-  $("substitutionDescription").textContent=`Substituir ${outgoing.name} do Time ${team}. Selecione um jogador da fila${outgoing.goalkeeper?" (goleiro)":" (jogador de linha)"}.`;
-  $("substitutionQueue").innerHTML=eligible.length?eligible.map(p=>`<button type="button" class="secondary substitution-option" data-substitute-id="${p.id}" style="width:100%;text-align:left;margin:3px 0">${escapeHtml(p.name)}${p.goalkeeper?" · Goleiro":""}</button>`).join(""):'<div class="empty">Não há jogadores disponíveis na fila para esta posição.</div>';
+  const outgoingIsKeeper=isMatchGoalkeeper(outgoingId,team);
+  const otherTeam=team==="A"?"B":"A";
+  const queued=sortQueue(state.players)
+    .filter(p=>outgoingIsKeeper||!p.goalkeeper)
+    .map(p=>({player:p,source:"queue",label:"Fila"}));
+  const ownTeam=outgoingIsKeeper?teamPlayers(team).filter(p=>p.id!==outgoingId&&!isMatchGoalkeeper(p.id,team)).map(p=>({player:p,source:"same-team",label:"Mesmo time · muda de posição"})):[];
+  const opponent=teamPlayers(otherTeam).filter(p=>!isMatchGoalkeeper(p.id,otherTeam)).map(p=>({player:p,source:"other-team",label:teamName(otherTeam)+" · troca entre times"}));
+  const candidates=[...queued,...ownTeam,...opponent].filter(item=>{
+    if(item.player.id===outgoingId)return false;
+    if(!outgoingIsKeeper)return !isMatchGoalkeeper(item.player.id,item.source==="other-team"?otherTeam:team);
+    return !isMatchGoalkeeper(item.player.id,item.source==="other-team"?otherTeam:team);
+  });
+  substitutionTarget={team,outgoingId,outgoingIsKeeper};
+  const roleText=outgoingIsKeeper?"goleiro desta partida":"jogador de linha";
+  $("substitutionDescription").textContent=`Saída: ${outgoing.name} (${teamName(team)} · ${roleText}). Escolha alguém da fila ou faça uma troca com outro jogador em campo. Se escolher alguém da linha para o gol, ele será goleiro somente nesta partida.`;
+  $("substitutionQueue").innerHTML=candidates.length?candidates.map(({player,source,label})=>`<button type="button" class="secondary substitution-option" data-substitute-id="${player.id}" data-substitute-source="${source}" style="width:100%;text-align:left;margin:3px 0"><strong>${escapeHtml(player.name)}</strong><small style="display:block;color:#a8b9ae">${label}${player.goalkeeper?" · Goleiro fixo":""}</small></button>`).join(""):'<div class="empty">Não há jogadores disponíveis para essa substituição.</div>';
   $("substitutionModal").classList.remove("hidden");
 }
 function closeSubstitutionModal(){substitutionTarget=null;$("substitutionModal").classList.add("hidden");}
-async function performSubstitution(incomingId){
+async function setMatchGoalkeeper(team,playerId){
+  if(!isAdmin()||!state.match.active)return;
+  const saved=await mutate(s=>{
+    if(!s.teams[team]?.includes(playerId))throw new Error("O jogador não pertence mais a este time.");
+    s.matchGoalkeepers=s.matchGoalkeepers||{A:null,B:null};
+    s.matchGoalkeepers[team]=playerId;
+  });
+  if(saved)notify(`${playerById(playerId)?.name||"Jogador"} definido como goleiro do ${teamName(team)} somente nesta partida.`);
+}
+async function performSubstitution(incomingId,sourceHint=null){
   if(!isAdmin()||!state.match.active||!substitutionTarget)return;
-  const {team,outgoingId}=substitutionTarget;
+  const {team,outgoingId,outgoingIsKeeper}=substitutionTarget;
   const saved=await mutate(s=>{
     const outgoing=s.players.find(p=>p.id===outgoingId),incoming=s.players.find(p=>p.id===incomingId);
+    const otherTeam=team==="A"?"B":"A";
     if(!outgoing||!incoming||!s.teams[team].includes(outgoingId))throw new Error("A escalação mudou. Atualize a página e tente novamente.");
-    if(incoming.team||playerStatus(incoming)!=="confirmado")throw new Error("O jogador selecionado não está mais disponível na fila.");
-    if(!!outgoing.goalkeeper!==!!incoming.goalkeeper)throw new Error("A substituição deve respeitar a posição de goleiro ou jogador de linha.");
+    const incomingTeam=incoming.team;
+    const incomingIsCurrentKeeper=incomingTeam==="A"||incomingTeam==="B" ? matchGoalkeeperId(incomingTeam,s)===incomingId : false;
+    if(incomingIsCurrentKeeper)throw new Error("Esse jogador é o goleiro atual do outro time. Escolha outro jogador para não deixar a equipe sem goleiro.");
+    if(incomingTeam && incomingTeam!==team && incomingTeam!==otherTeam)throw new Error("O jogador selecionado não está disponível.");
+    if(!incomingTeam && (incoming.active===false||playerStatus(incoming)!=="confirmado"||!incoming.confirmed))throw new Error("O jogador selecionado não está mais disponível na fila.");
+    if(!outgoingIsKeeper && isMatchGoalkeeper(outgoingId,team,s))throw new Error("A posição do jogador mudou. Abra a substituição novamente.");
+    if(!outgoingIsKeeper && incoming.goalkeeper && incomingTeam==null)throw new Error("Para substituir um jogador de linha, selecione outro jogador de linha.");
+
+    // O substituto vindo do próprio time assume o gol; o antigo goleiro passa à linha.
+    if(incomingTeam===team){
+      if(!outgoingIsKeeper)throw new Error("A troca dentro do mesmo time está disponível para substituição do goleiro.");
+      s.matchGoalkeepers=s.matchGoalkeepers||{A:null,B:null};
+      s.matchGoalkeepers[team]=incomingId;
+      incoming.played=true;outgoing.played=true;
+      if(!s.currentMatchParticipants)s.currentMatchParticipants={A:[],B:[]};
+      for(const id of [outgoingId,incomingId])if(!s.currentMatchParticipants[team].includes(id))s.currentMatchParticipants[team].push(id);
+      return;
+    }
+
+    // Jogador do outro time: troca direta de equipes, sem passar pela fila.
+    if(incomingTeam===otherTeam){
+      if(!s.teams[otherTeam]?.includes(incomingId))throw new Error("A escalação do outro time mudou. Tente novamente.");
+      if(!outgoingIsKeeper && isMatchGoalkeeper(incomingId,otherTeam,s))throw new Error("Não é possível retirar o goleiro atual do outro time por uma substituição de linha.");
+      s.teams[team]=s.teams[team].map(id=>id===outgoingId?incomingId:id);
+      s.teams[otherTeam]=s.teams[otherTeam].map(id=>id===incomingId?outgoingId:id);
+      incoming.team=team;outgoing.team=otherTeam;
+      incoming.status="confirmado";incoming.confirmed=true;incoming.active=true;
+      outgoing.status="confirmado";outgoing.confirmed=true;outgoing.active=true;
+      incoming.played=true;outgoing.played=true;
+      if(outgoingIsKeeper){s.matchGoalkeepers=s.matchGoalkeepers||{A:null,B:null};s.matchGoalkeepers[team]=incomingId;}
+      if(!s.currentMatchParticipants)s.currentMatchParticipants={A:[],B:[]};
+      for(const id of [outgoingId,incomingId]){
+        if(!s.currentMatchParticipants[team].includes(id))s.currentMatchParticipants[team].push(id);
+        if(!s.currentMatchParticipants[otherTeam].includes(id))s.currentMatchParticipants[otherTeam].push(id);
+      }
+      return;
+    }
+
+    // Jogador da fila: substituição normal. A função de goleiro é temporária.
+    if(incoming.team)throw new Error("O jogador selecionado não está mais na fila.");
     s.teams[team]=s.teams[team].map(id=>id===outgoingId?incomingId:id);
-    outgoing.team=null;outgoing.status="ausente";outgoing.confirmed=false;outgoing.active=true;outgoing.confirmedAt=null;outgoing.played=true;
-    incoming.team=team;incoming.status="confirmado";incoming.confirmed=true;incoming.played=true;
+    outgoing.played=true;
+    appendPlayersToQueue(s,[outgoing]);
+    incoming.team=team;incoming.status="confirmado";incoming.confirmed=true;incoming.active=true;incoming.played=true;
+    if(outgoingIsKeeper){s.matchGoalkeepers=s.matchGoalkeepers||{A:null,B:null};s.matchGoalkeepers[team]=incomingId;}
     if(!s.currentMatchParticipants)s.currentMatchParticipants={A:[],B:[]};
     for(const id of [outgoingId,incomingId])if(!s.currentMatchParticipants[team].includes(id))s.currentMatchParticipants[team].push(id);
   });
-  if(saved){closeSubstitutionModal();notify("Substituição realizada. O jogador que saiu foi marcado como ausente.");}
+  if(saved){closeSubstitutionModal();notify(outgoingIsKeeper?"Substituição realizada. O novo goleiro vale somente para esta partida; a definição será reavaliada no próximo jogo.":"Substituição realizada. O jogador saiu para o fim da fila e continua presente.");}
 }
 
 async function clearSession(){
@@ -1353,13 +1486,15 @@ function bindEvents(){
   ["A","B"].forEach(team=>$("team"+team+"List").onclick=e=>{
     const goal=e.target.closest("button[data-score-player]");
     const sub=e.target.closest("button[data-sub-player]");
+    const keeper=e.target.closest("button[data-match-keeper-player]");
     if(goal)requestGoalConfirmation(team,goal.dataset.scorePlayer);
     if(sub)openSubstitutionModal(team,sub.dataset.subPlayer);
+    if(keeper)setMatchGoalkeeper(team,keeper.dataset.matchKeeperPlayer);
   });
   $("cancelSubstitution").onclick=closeSubstitutionModal;
   $("confirmGoalBtn").onclick=async()=>{const goal=pendingGoal;if(!goal)return;closeGoalConfirmation();await registerGoal(goal.team,goal.playerId);};
   $("cancelGoalBtn").onclick=closeGoalConfirmation;
-  $("substitutionQueue").onclick=e=>{const b=e.target.closest("button[data-substitute-id]");if(b)performSubstitution(b.dataset.substituteId);};
+  $("substitutionQueue").onclick=e=>{const b=e.target.closest("button[data-substitute-id]");if(b)performSubstitution(b.dataset.substituteId,b.dataset.substituteSource);};
   $("playersList").onclick=e=>{const b=e.target.closest("button[data-action]");if(b)playerAction(b.dataset.action,b.dataset.id);};
   $("queueList").onclick=e=>{const b=e.target.closest("button[data-queue-move]");if(b)moveQueuePlayer(b.dataset.queueId,Number(b.dataset.queueMove));};
   $("startBtn").onclick=startMatch;$("pauseBtn").onclick=pauseTimer;
