@@ -87,6 +87,17 @@ Quando a opção está desativada, um empate por tempo na primeira partida é re
 
 A cada nova partida, a designação de goleiro é limpa para que o administrador escolha novamente quem ficará no gol. Use o botão 🧤 ao lado do jogador na escalação para defini-lo como goleiro daquela partida. Na primeira formação, os goleiros marcados no cadastro são usados como padrão. Uma designação temporária feita por substituição não altera o cadastro permanente do jogador.
 
+## Regra corrigida
+
+Quando o time perdedor possui um goleiro temporário e não existe goleiro fixo aguardando na fila, o goleiro temporário sai junto com a equipe e a reposição deve trazer sete jogadores de linha. O administrador poderá então escolher novamente quem será o goleiro temporário.
+
+Quando existe goleiro fixo aguardando na fila, ele entra como goleiro e são selecionados seis jogadores de linha.
+
+Quando o goleiro atual é fixo e não há outro goleiro fixo na fila, ele permanece no time; somente os jogadores de linha são renovados.
+
+Não há alteração de estrutura do Supabase nem script SQL obrigatório. A correção está no `index.html`.
+
+
 ## Estatísticas separadas por função (linha e goleiro)
 
 As participações passam a ser contabilizadas separadamente conforme a função registrada no histórico de cada partida:
