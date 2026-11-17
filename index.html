@@ -207,7 +207,7 @@
     .rank-stat strong{font-size:14px;font-variant-numeric:tabular-nums}
     .rank-stat small{font-size:8px;color:var(--muted);font-weight:800;margin-top:3px}
     .rank-goals strong{color:#9ce8b5}
-    .match-history-section{border-top:1px solid var(--line);padding-top:16px}
+    .ranking-category{margin-top:14px}.ranking-category h3{margin:0 0 3px;font-size:16px}.goalkeeper-ranking-category{border-top:1px solid var(--line);padding-top:16px;margin-top:22px}.match-history-section{border-top:1px solid var(--line);padding-top:16px}
     .match-history-scroll{max-height:440px;overflow-y:auto;overscroll-behavior:contain;padding-right:3px;scrollbar-width:thin;scrollbar-color:#42634f #142019}
     .history-match-penalties{font-size:10px;color:#e5d18e;margin-top:6px;padding-top:6px;border-top:1px solid #344334}
     .history-match-card{padding:12px;margin-bottom:9px;border:1px solid var(--line);border-radius:13px;background:linear-gradient(150deg,#192920,#101a14)}
@@ -645,7 +645,7 @@ function render(){
 }
 function formatTime(sec){sec=Math.max(0,sec|0);return String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");}
 function calculatePlayerStats(playerId){
-  const stats={games:0,lineGames:0,goalkeeperGames:0,wins:0,losses:0,goals:0,goalsConceded:0,cleanSheets:0};
+  const stats={games:0,lineGames:0,goalkeeperGames:0,wins:0,losses:0,lineWins:0,goalkeeperWins:0,lineLosses:0,goalkeeperLosses:0,goals:0,goalsConceded:0,cleanSheets:0};
   for(const match of (state.history||[])){
     const a=match.playersA||[], b=match.playersB||[];
     const entryA=a.find(p=>(typeof p==="string"?p:p.id)===playerId);
@@ -661,8 +661,10 @@ function calculatePlayerStats(playerId){
         stats.goalsConceded+=conceded;
         if(conceded===0)stats.cleanSheets++;
       }else stats.lineGames++;
-      if(match.winnerTeam==="A"&&inA || match.winnerTeam==="B"&&inB)stats.wins++;
-      else if(match.winnerTeam==="A"&&inB || match.winnerTeam==="B"&&inA)stats.losses++;
+      const won=match.winnerTeam==="A"&&inA || match.winnerTeam==="B"&&inB;
+      const lost=match.winnerTeam==="A"&&inB || match.winnerTeam==="B"&&inA;
+      if(won){stats.wins++;if(wasGoalkeeper)stats.goalkeeperWins++;else stats.lineWins++;}
+      else if(lost){stats.losses++;if(wasGoalkeeper)stats.goalkeeperLosses++;else stats.lineLosses++;}
     }
     stats.goals+=(match.scorers||[]).filter(g=>g.playerId===playerId).length;
   }
@@ -726,44 +728,35 @@ function renderQueue(){
 }
 function renderHistory(){
   const ranking=$("rankingList"),matches=$("matchHistoryList");
-  const rows=state.players
-    .map(p=>({player:p,...calculatePlayerStats(p.id)}))
-    .sort((a,b)=>b.wins-a.wins||b.goals-a.goals||a.losses-b.losses||a.player.name.localeCompare(b.player.name,"pt-BR"));
-  if(!rows.length){
-    ranking.innerHTML='<div class="empty">Ainda não há jogadores para o ranking.</div>';
-  }else{
-    const maxGoals=Math.max(1,...rows.map(r=>r.goals));
+  const allRows=state.players.map(p=>({player:p,...calculatePlayerStats(p.id)}));
+  const renderRankingGroup=(rows,role)=>{
+    const isKeeper=role==="keeper";
+    const winsKey=isKeeper?"goalkeeperWins":"lineWins";
+    rows=rows.filter(r=>isKeeper?r.goalkeeperGames>0:r.lineGames>0)
+      .sort((a,b)=>b[winsKey]-a[winsKey]||(isKeeper?b.cleanSheets-a.cleanSheets:b.goals-a.goals)||a.player.name.localeCompare(b.player.name,"pt-BR"));
+    if(!rows.length)return '<div class="empty">Ainda não há estatísticas registradas nesta categoria.</div>';
+    const maxMetric=Math.max(1,...rows.map(r=>isKeeper?r.cleanSheets:r.goals));
     const medal=["🥇","🥈","🥉"];
-    const podium=rows.slice(0,3).map((r,i)=>`
-      <div class="podium-card podium-${i+1}">
-        <div class="podium-medal">${medal[i]}</div>
-        <div class="podium-rank">${i+1}º LUGAR</div>
-        <div class="podium-name">${escapeHtml(r.player.name)}</div>
-        <div class="podium-wins"><strong>${r.wins}</strong><span>VITÓRIAS</span></div>
-        <div class="podium-metrics">
-          <div class="podium-metric"><span class="podium-metric-icon">⚽</span><strong>${r.goals}</strong><small>GOLS</small></div>
-          <div class="podium-metric"><span class="podium-metric-icon">👟</span><strong>${r.lineGames}</strong><small>LINHA</small></div>
-          <div class="podium-metric"><span class="podium-metric-icon">🧤</span><strong>${r.goalkeeperGames}</strong><small>GOL</small></div>
-        </div>
-        <div class="goalkeeper-extra">🧤 ${r.goalsConceded} gols sofridos · ${r.cleanSheets} jogos sem sofrer gols</div>
-      </div>`).join("");
-    const list=rows.slice(3).map((r,index)=>`
-      <div class="rank-row">
-        <div class="rank-number">${index+4}</div>
-        <div class="rank-main">
-          <div class="rank-name">${escapeHtml(r.player.name)}</div>
-          <div class="rank-goal-track"><span style="width:${Math.round((r.goals/maxGoals)*100)}%"></span></div>
-          <div class="rank-extra">🧤 ${r.goalsConceded} sofridos · ${r.cleanSheets} sem sofrer</div>
-        </div>
-        <div class="rank-stat rank-goals"><strong>${r.goals}</strong><small>GOLS</small></div>
-        <div class="rank-stat"><strong>${r.lineGames}</strong><small>LINHA</small></div>
-        <div class="rank-stat"><strong>${r.goalkeeperGames}</strong><small>GOL</small></div>
-      </div>`).join("");
-    const scrollRanking=list
-      ? `<div class="ranking-scroll" tabindex="0" aria-label="Ranking a partir do quarto lugar"><div class="ranking-list">${list}</div></div>`
-      : "";
-    ranking.innerHTML=`<div class="ranking-podium">${podium}</div>${scrollRanking}`;
-  }
+    const podium=rows.slice(0,3).map((r,i)=>{
+      const wins=r[winsKey];
+      const metrics=isKeeper
+        ? `<div class="podium-metric"><span class="podium-metric-icon">🧤</span><strong>${r.goalkeeperGames}</strong><small>JOGOS NO GOL</small></div><div class="podium-metric"><span class="podium-metric-icon">🧱</span><strong>${r.cleanSheets}</strong><small>SEM SOFRER</small></div><div class="podium-metric"><span class="podium-metric-icon">⚽</span><strong>${r.goalsConceded}</strong><small>SOFRIDOS</small></div>`
+        : `<div class="podium-metric"><span class="podium-metric-icon">⚽</span><strong>${r.goals}</strong><small>GOLS</small></div><div class="podium-metric"><span class="podium-metric-icon">👟</span><strong>${r.lineGames}</strong><small>JOGOS</small></div><div class="podium-metric"><span class="podium-metric-icon">📉</span><strong>${r.lineLosses}</strong><small>DERROTAS</small></div>`;
+      return `<div class="podium-card podium-${i+1}"><div class="podium-medal">${medal[i]}</div><div class="podium-rank">${i+1}º LUGAR</div><div class="podium-name">${escapeHtml(r.player.name)}</div><div class="podium-wins"><strong>${wins}</strong><span>VITÓRIAS</span></div><div class="podium-metrics">${metrics}</div></div>`;
+    }).join("");
+    const list=rows.slice(3).map((r,index)=>{
+      const mainMetric=isKeeper?r.cleanSheets:r.goals;
+      const extra=isKeeper?`🧤 ${r.goalsConceded} gols sofridos · ${r.cleanSheets} jogos sem sofrer gols`:`⚽ ${r.goals} gols · ${r.lineGames} jogos · ${r.lineLosses} derrotas`;
+      return `<div class="rank-row"><div class="rank-number">${index+4}</div><div class="rank-main"><div class="rank-name">${escapeHtml(r.player.name)}</div><div class="rank-goal-track"><span style="width:${Math.round((mainMetric/maxMetric)*100)}%"></span></div><div class="rank-extra">${extra}</div></div><div class="rank-stat"><strong>${r[winsKey]}</strong><small>VITÓRIAS</small></div><div class="rank-stat"><strong>${isKeeper?r.goalkeeperGames:r.lineGames}</strong><small>JOGOS</small></div><div class="rank-stat"><strong>${isKeeper?r.cleanSheets:r.goals}</strong><small>${isKeeper?"SG":"GOLS"}</small></div></div>`;
+    }).join("");
+    const scroll=list?`<div class="ranking-scroll" tabindex="0" aria-label="Ranking ${isKeeper?"de goleiros":"de jogadores de linha"} a partir do quarto lugar"><div class="ranking-list">${list}</div></div>`:"";
+    return `<div class="ranking-podium">${podium}</div>${scroll}`;
+  };
+  const lineRows=allRows.filter(r=>r.lineGames>0);
+  const keeperRows=allRows.filter(r=>r.goalkeeperGames>0);
+  ranking.innerHTML=allRows.length
+    ? `<section class="ranking-category"><div class="history-heading"><div><h3>👟 Jogadores de linha</h3><p class="muted">Classificação pelas vitórias conquistadas atuando na linha.</p></div></div>${renderRankingGroup(lineRows,"line")}</section><section class="ranking-category goalkeeper-ranking-category"><div class="history-heading"><div><h3>🧤 Goleiros</h3><p class="muted">Classificação pelas vitórias conquistadas atuando no gol.</p></div></div>${renderRankingGroup(keeperRows,"keeper")}</section>`
+    : '<div class="empty">Ainda não há jogadores para o ranking.</div>';
   if(!state.history.length){
     matches.innerHTML='<div class="empty">Nenhuma partida finalizada.</div>';
     return;
