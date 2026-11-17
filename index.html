@@ -587,9 +587,11 @@ function teamPlayers(team){return (state.teams[team]||[]).map(playerById).filter
 function matchGoalkeeperId(team, source=state){
   if(source?.matchGoalkeepers && Object.prototype.hasOwnProperty.call(source.matchGoalkeepers,team)){
     const configured=source.matchGoalkeepers[team];
-    return configured && (source.teams?.[team]||[]).includes(configured) ? configured : null;
+    // A escolha temporária tem precedência enquanto estiver válida. Se estiver
+    // vazia, a flag permanente GOLEIRO continua valendo e não pode ser perdida.
+    if(configured && (source.teams?.[team]||[]).includes(configured)) return configured;
   }
-  const permanent=(source.teams?.[team]||[]).find(id=>source.players?.find(p=>p.id===id)?.goalkeeper);
+  const permanent=(source.teams?.[team]||[]).find(id=>source.players?.find(p=>p.id===id)?.goalkeeper===true);
   return permanent||null;
 }
 function isMatchGoalkeeper(playerId,team,source=state){return matchGoalkeeperId(team,source)===playerId;}
@@ -1059,8 +1061,28 @@ function startNextMatch(s,winner,loser){
   const rotationThresholdReached=(Number(s.streak[winner])||0)>=config.consecutiveWinsToRotate;
   const enoughPlayersForBothTeams=queuedFieldPlayers.length>=fieldPerTeam*2;
   if(rotationThresholdReached&&enoughPlayersForBothTeams){
-    const keeperA=matchGoalkeeperId("A",s);
-    const keeperB=matchGoalkeeperId("B",s);
+    // GOLEIRO FIXO não sai simplesmente porque os dois times serão renovados.
+    // Ele só pode voltar para a fila quando existir outro goleiro fixo aguardando
+    // para assumir sua vaga. Goleiros temporários não recebem essa proteção.
+    const fixedKeeperA=winnerIds.find(id=>findPlayer(id)?.goalkeeper===true)||null;
+    const fixedKeeperB=loserIds.find(id=>findPlayer(id)?.goalkeeper===true)||null;
+    const currentFixedKeepers=[
+      ...(fixedKeeperA?[{team:winner,id:fixedKeeperA}]:[]),
+      ...(fixedKeeperB?[{team:loser,id:fixedKeeperB}]:[])
+    ];
+    const incomingKeepers=[...queuedKeepers];
+    const keepersToReplace=currentFixedKeepers
+      .map(k=>({...k,games:playerGamesInState(s,k.id)}))
+      .sort((a,b)=>b.games-a.games); // quem tem mais partidas cede a vaga primeiro
+    const replacedKeepers=[];
+    while(incomingKeepers.length&&keepersToReplace.length){
+      const outgoing=keepersToReplace.shift();
+      const incoming=incomingKeepers.shift();
+      replacedKeepers.push({team:outgoing.team,outgoingId:outgoing.id,incoming});
+    }
+    const keeperForTeam={A:fixedKeeperA,B:fixedKeeperB};
+    for(const replacement of replacedKeepers)keeperForTeam[replacement.team]=replacement.incoming.id;
+
     const incomingField=queuedFieldPlayers.slice(0,fieldPerTeam*2);
     let nextA=incomingField.slice(0,fieldPerTeam);
     let nextB=incomingField.slice(fieldPerTeam,fieldPerTeam*2);
@@ -1080,13 +1102,14 @@ function startNextMatch(s,winner,loser){
       }
     }
 
-    const currentKeeperIds=new Set([keeperA,keeperB].filter(Boolean));
+    const retainedKeeperIds=new Set(Object.values(keeperForTeam).filter(Boolean));
     const outgoingField=[...winnerIds,...loserIds]
-      .filter(id=>!currentKeeperIds.has(id)).map(findPlayer).filter(Boolean);
-    appendPlayersToQueue(s,outgoingField);
+      .filter(id=>!retainedKeeperIds.has(id)).map(findPlayer).filter(Boolean);
+    const outgoingReplacedKeepers=replacedKeepers.map(x=>findPlayer(x.outgoingId)).filter(Boolean);
+    appendPlayersToQueue(s,[...outgoingField,...outgoingReplacedKeepers]);
     s.teams={
-      A:[...(keeperA?[keeperA]:[]),...nextA.map(p=>p.id)],
-      B:[...(keeperB?[keeperB]:[]),...nextB.map(p=>p.id)]
+      A:[...(keeperForTeam.A?[keeperForTeam.A]:[]),...nextA.map(p=>p.id)],
+      B:[...(keeperForTeam.B?[keeperForTeam.B]:[]),...nextB.map(p=>p.id)]
     };
     for(const p of s.players)p.team=null;
     for(const id of s.teams.A){const p=findPlayer(id);if(p)p.team="A";}
@@ -1106,9 +1129,22 @@ function startNextMatch(s,winner,loser){
   // permanece em campo mesmo que tenha alcançado o limite de vitórias.
   // Nesse cenário, somente o time perdedor recebe as substituições disponíveis.
   const loserKeeperId=matchGoalkeeperId(loser,s);
+  const loserKeeper=findPlayer(loserKeeperId);
+  const loserKeeperIsFixed=!!(loserKeeper&&loserKeeper.goalkeeper===true);
+  const hasQueuedFixedKeeper=queuedKeepers.length>0;
   const losingFieldPlayers=loserIds.filter(id=>id!==loserKeeperId).map(findPlayer).filter(Boolean);
-  const outgoingField=chooseOutgoingByGames(s,losingFieldPlayers,Math.min(losingFieldPlayers.length,queuedFieldPlayers.length));
-  let incomingField=queuedFieldPlayers.slice(0,outgoingField.length);
+
+  // Se o goleiro atual for temporário e não houver goleiro fixo aguardando,
+  // ele também sai com o time perdedor. Nesse caso, a vaga dele deve ser
+  // preenchida por um sétimo jogador de linha, para que o administrador
+  // escolha novamente o goleiro temporário na partida.
+  const needsSevenFieldPlayers=!!loserKeeperId&&!loserKeeperIsFixed&&!hasQueuedFixedKeeper;
+  const desiredIncomingFieldCount=Math.min(
+    queuedFieldPlayers.length,
+    losingFieldPlayers.length+(needsSevenFieldPlayers?1:0)
+  );
+  const outgoingField=chooseOutgoingByGames(s,losingFieldPlayers,Math.min(losingFieldPlayers.length,desiredIncomingFieldCount));
+  let incomingField=queuedFieldPlayers.slice(0,desiredIncomingFieldCount);
 
   if(config.friendlyFut&&incomingField.length){
     const winnerGoalTotal=winnerIds.reduce((sum,id)=>sum+playerGoalsInState(s,id),0);
@@ -1132,13 +1168,25 @@ function startNextMatch(s,winner,loser){
   const replacements=new Map();
   outgoingField.forEach((p,index)=>replacements.set(p.id,incomingField[index].id));
   const newLoserIds=loserIds.map(id=>replacements.get(id)||id);
+  // Quando o goleiro temporário sai sem substituto fixo, o sétimo jogador
+  // de linha entra como membro adicional do time, sem remover um jogador
+  // de linha que já estava em campo.
+  const extraFieldPlayers=incomingField.slice(outgoingField.length);
+  newLoserIds.push(...extraFieldPlayers.map(p=>p.id));
 
   let outgoingKeeper=null,incomingKeeper=null;
   if(loserKeeperId&&queuedKeepers.length){
-    outgoingKeeper=findPlayer(loserKeeperId);
+    outgoingKeeper=loserKeeper;
     incomingKeeper=queuedKeepers[0];
     const keeperIndex=newLoserIds.indexOf(loserKeeperId);
     if(keeperIndex>=0)newLoserIds[keeperIndex]=incomingKeeper.id;
+  }else if(loserKeeperId&&!loserKeeperIsFixed){
+    // Sem goleiro fixo na fila, o goleiro temporário também sai.
+    // A equipe passa a ter sete jogadores de linha e o administrador
+    // poderá escolher novamente quem vai para o gol.
+    outgoingKeeper=loserKeeper;
+    const keeperIndex=newLoserIds.indexOf(loserKeeperId);
+    if(keeperIndex>=0)newLoserIds.splice(keeperIndex,1);
   }
 
   appendPlayersToQueue(s,[...outgoingField,...(outgoingKeeper?[outgoingKeeper]:[])]);
