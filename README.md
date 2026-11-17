@@ -1,4 +1,4 @@
-# FUTEBOL-DETRAN — Gerenciador de pelada
+# FUTEBOL-DETRAN — fila manual, rotação parcial e consulta pública
 
 ## Alterações
 - Leitura pública do estado sem autenticação.
@@ -73,3 +73,31 @@ Quando a opção está desativada, um empate por tempo na primeira partida é re
 - Exemplo com 7 jogadores por equipe: são necessários 12 jogadores de linha na fila (6 para cada time). Com apenas 11, o time vencedor permanece em campo, mesmo que tenha ultrapassado o limite de vitórias; o time perdedor recebe as substituições possíveis pela regra normal.
 - Quando a fila alcançar 12 jogadores de linha, a renovação simultânea poderá acontecer na conclusão da próxima vitória, preservando os dois goleiros atuais.
 - O FriendlyFut continua sendo aplicado à distribuição dos novos jogadores de linha entre as duas equipes.
+
+## Substituições entre times e goleiro por partida
+
+- Durante uma partida, o administrador pode substituir um jogador de linha por alguém da fila ou trocar diretamente com um jogador de linha do outro time. Na troca entre equipes, os dois jogadores trocam de time, mantendo a quantidade de atletas em cada lado.
+- Ao substituir o goleiro, o administrador pode escolher alguém da fila, um jogador de linha do próprio time ou um jogador de linha do outro time. Se a escolha vier do próprio time, o goleiro anterior passa a atuar na linha; se vier do outro time, os dois jogadores trocam de equipe.
+- A função de goleiro escolhida durante a substituição é registrada em `matchGoalkeepers`, separada do cadastro permanente `goalkeeper`. Portanto, um jogador de linha pode atuar como goleiro somente naquela partida, sem alterar seu cadastro.
+- Ao preparar a partida seguinte, a designação temporária é descartada e a aplicação volta a considerar os goleiros fixos cadastrados. O administrador também pode definir manualmente o goleiro da partida atual pelo botão 🧤 ao lado de cada jogador da escalação.
+- O goleiro que está atualmente no outro time não aparece como opção para uma troca, evitando deixar a equipe de origem sem goleiro.
+- A estrutura do banco não muda: `matchGoalkeepers` é armazenado no JSONB já existente em `public.futebol_estado`.
+
+### Operação do goleiro na partida
+
+A cada nova partida, a designação de goleiro é limpa para que o administrador escolha novamente quem ficará no gol. Use o botão 🧤 ao lado do jogador na escalação para defini-lo como goleiro daquela partida. Na primeira formação, os goleiros marcados no cadastro são usados como padrão. Uma designação temporária feita por substituição não altera o cadastro permanente do jogador.
+
+## Estatísticas separadas por função (linha e goleiro)
+
+As participações passam a ser contabilizadas separadamente conforme a função registrada no histórico de cada partida:
+- **Linha:** partidas em que o jogador atuou como jogador de linha.
+- **Goleiro:** partidas em que o jogador foi registrado como goleiro daquela partida, inclusive quando assumiu a posição temporariamente.
+- **Gols sofridos:** soma dos gols marcados pelo adversário nas partidas em que o jogador atuou como goleiro.
+- **Jogos sem sofrer gols:** partidas em que o adversário terminou com zero gol no placar normal.
+
+O ranking e a fila exibem as quantidades de partidas na linha e no gol separadamente. O histórico já registra a função do jogador em cada partida; não é necessário alterar a estrutura do Supabase nem executar novo SQL. Registros antigos que não tenham a informação de função são considerados participações na linha, pois não há como inferir com segurança a posição exercida.
+
+
+## Pré-visualização dos dois próximos times
+
+Quando a partida em andamento puder atingir o limite configurado de vitórias consecutivas e houver jogadores de linha suficientes para formar duas equipes completas, a fila destaca os dois grupos: **Próximo Time 1** em amarelo e **Próximo Time 2** em azul. Cada grupo considera a quantidade configurada de jogadores de linha; goleiros disponíveis são identificados separadamente. Se não houver goleiro suficiente na fila, a indicação informa que o goleiro atual será mantido. A segunda equipe só aparece quando há jogadores de linha para os dois times.
